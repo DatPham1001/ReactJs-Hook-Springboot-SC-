@@ -1,0 +1,5 @@
+CREATE TRIGGER update_supplier_modtime BEFORE UPDATE ON supplier FOR EACH ROW EXECUTE PROCEDURE  set_last_updated_stamp();
+CREATE TRIGGER update_product_modtime BEFORE UPDATE ON product FOR EACH ROW EXECUTE PROCEDURE  set_last_updated_stamp();
+CREATE TRIGGER update_category_modtime BEFORE UPDATE ON category FOR EACH ROW EXECUTE PROCEDURE  set_last_updated_stamp();
+CREATE TRIGGER update_orders_modtime BEFORE UPDATE ON orders FOR EACH ROW EXECUTE PROCEDURE  set_last_updated_stamp();
+CREATE TRIGGER update_order_item_modtime BEFORE UPDATE ON order_item FOR EACH ROW EXECUTE PROCEDURE  set_last_updated_stamp();

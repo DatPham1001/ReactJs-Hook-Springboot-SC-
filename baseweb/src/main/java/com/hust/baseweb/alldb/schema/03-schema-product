@@ -1,0 +1,44 @@
+-- public.product definition
+
+-- Drop table
+
+-- DROP TABLE product;
+
+CREATE TABLE product (
+	product_id uuid NOT NULL DEFAULT uuid_generate_v1(),
+	product_code varchar(30) NOT NULL,
+	category_id uuid NULL,
+	product_name varchar(255) NULL,
+	price int8 NULL,
+	link_img text NULL,
+	warehouse_quantity int4 NULL,
+	description text NULL,
+	last_updated_stamp timestamp NULL,
+	created_stamp timestamp NULL,
+	is_deleted bool NOT NULL DEFAULT false,
+	CONSTRAINT pk_product PRIMARY KEY (product_id)
+);
+
+
+-- public.product foreign keys
+
+ALTER TABLE public.product ADD CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES category(category_id);
+ALTER TABLE public.product ADD CONSTRAINT fk_product_supplier FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id);
+
+
+
+-- public.category definition
+
+-- Drop table
+
+-- DROP TABLE category;
+
+CREATE TABLE category (
+	category_id uuid NOT NULL DEFAULT uuid_generate_v1(),
+	category_name varchar(255) NOT NULL,
+	description text NULL,
+	created_stamp timestamp NULL,
+	last_updated_stamp timestamp NULL,
+	is_deleted bool NOT NULL DEFAULT false,
+	CONSTRAINT pk_category PRIMARY KEY (category_id)
+);

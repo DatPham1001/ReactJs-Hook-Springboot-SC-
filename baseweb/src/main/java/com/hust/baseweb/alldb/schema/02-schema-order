@@ -1,0 +1,50 @@
+-- public.orders definition
+
+-- Drop table
+
+-- DROP TABLE orders;
+
+CREATE TABLE orders (
+	order_id uuid NOT NULL DEFAULT uuid_generate_v1(),
+	order_code varchar(30) NOT NULL,
+	status_id varchar(60) NOT NULL,
+	total_payment int8 NOT NULL,
+	quantity int4 NOT NULL,
+	exp_delivery_date date NOT NULL,
+	note text NULL,
+	last_updated_stamp timestamp NULL,
+	created_stamp timestamp NULL,
+	is_deleted bool NOT NULL DEFAULT false,
+	supplier_id uuid NOT NULL,
+	CONSTRAINT pk_order PRIMARY KEY (order_id)
+);
+
+
+-- public.orders foreign keys
+
+ALTER TABLE public.orders ADD CONSTRAINT fk_order_status FOREIGN KEY (status_id) REFERENCES status(status_id);
+
+
+
+-- public.order_item definition
+
+-- Drop table
+
+-- DROP TABLE order_item;
+
+CREATE TABLE order_item (
+	order_id uuid NOT NULL,
+	product_id uuid NOT NULL,
+	order_quantity int4 NOT NULL,
+	import_quantity int4 NULL,
+	last_updated_stamp timestamp NULL,
+	created_stamp timestamp NULL,
+	is_deleted bool NOT NULL DEFAULT false,
+	CONSTRAINT pk_order_item PRIMARY KEY (order_id, product_id)
+);
+
+
+-- public.order_item foreign keys
+
+ALTER TABLE public.order_item ADD CONSTRAINT fk_order_item__orders FOREIGN KEY (order_id) REFERENCES orders(order_id);
+ALTER TABLE public.order_item ADD CONSTRAINT fk_order_item__product FOREIGN KEY (product_id) REFERENCES product(product_id);

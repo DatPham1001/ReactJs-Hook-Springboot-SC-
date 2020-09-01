@@ -1,0 +1,105 @@
+.image-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    padding: 3px;
+    border-width: 10px;
+    border-radius: 10px;
+}
+.products-background{
+    background-color: aquamarine;
+}
+.table-container{
+    margin-bottom: 30px;
+}
+.delete-logo{
+    height: 20px;
+    border-radius: 10px;
+}
+.delete-logo:hover{
+    cursor: pointer;
+}
+.btn{
+    background-color: #3d79a6;
+    border: none;
+    box-shadow: none;
+    padding: 7px 15px 7px 15px;
+    border-radius: 5px;
+    margin-left: 20px;
+}
+@media screen and (min-width: 576px) {
+    .modal-dialog {
+      max-width: 800px;
+      margin: 1.75rem auto;
+    }
+}
+@media screen and (min-width: 992px) {
+    .modal-lg {
+      width: 950px; /* New width for large modal */
+    }
+}
+.add-container {
+    width: 100%;
+    position: relative;
+    padding-left: 805px;
+    margin-bottom: 20px;
+    
+}
+.add-title{
+   margin-right: 40px;
+   margin-left: 40px;
+}
+.create-title{
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+.text-input{
+    width: 70%;
+    margin: 10px 0 20px 20px;
+}
+.save-icon{
+    text-align: center;
+}
+.img-container{
+    width: 80%;
+    height: auto;
+}
+.image-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    padding: 3px;
+    border-width: 10px;
+    border-radius: 10px;
+}
+.icons{
+    margin-bottom: 20px;
+    margin-top: 20px;
+    float: right;
+}
+.img-create-container{
+    width: 50%;
+    height: auto;
+}
+.product-price{
+    font-size: 30px;
+    color: red;
+    width: 70%;
+    margin: 10px 0 20px 20px;
+}
+.product-detail{
+    font-size: 15px;
+    width: 70%;
+    margin: 10px 0 20px 20px;
+}
+.product-title{
+    width: 70%;
+    margin: 10px 0 20px 20px;
+}
+.update-button{
+    margin: 20px;
+}
+.upload-btn{
+    /* width: %; */
+    margin: 10px 0 20px 20px;
+}
