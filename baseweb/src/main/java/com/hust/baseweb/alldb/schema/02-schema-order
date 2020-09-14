@@ -5,9 +5,8 @@
 -- DROP TABLE orders;
 
 CREATE TABLE orders (
-	order_id uuid NOT NULL DEFAULT uuid_generate_v1(),
-	order_code varchar(30) NOT NULL,
-	status_id varchar(60) NOT NULL,
+	id uuid NOT NULL DEFAULT uuid_generate_v1(),
+	code varchar(30) NOT NULL,
 	total_payment int8 NOT NULL,
 	quantity int4 NOT NULL,
 	exp_delivery_date date NOT NULL,
@@ -16,13 +15,16 @@ CREATE TABLE orders (
 	created_stamp timestamp NULL,
 	is_deleted bool NOT NULL DEFAULT false,
 	supplier_id uuid NOT NULL,
-	CONSTRAINT pk_order PRIMARY KEY (order_id)
+	discount int8 NOT NULL DEFAULT 0,
+	payment_method varchar(15) NULL,
+	status varchar(10) NOT NULL DEFAULT 'ORDER'::character varying,
+	CONSTRAINT pk_order PRIMARY KEY (id)
 );
 
 
 -- public.orders foreign keys
 
-ALTER TABLE public.orders ADD CONSTRAINT fk_order_status FOREIGN KEY (status_id) REFERENCES status(status_id);
+ALTER TABLE public.orders ADD CONSTRAINT fk_order_supplier FOREIGN KEY (supplier_id) REFERENCES supplier(id);
 
 
 
@@ -37,14 +39,12 @@ CREATE TABLE order_item (
 	product_id uuid NOT NULL,
 	order_quantity int4 NOT NULL,
 	import_quantity int4 NULL,
-	last_updated_stamp timestamp NULL,
-	created_stamp timestamp NULL,
-	is_deleted bool NOT NULL DEFAULT false,
+	price int8 NOT NULL DEFAULT 0,
 	CONSTRAINT pk_order_item PRIMARY KEY (order_id, product_id)
 );
 
 
 -- public.order_item foreign keys
 
-ALTER TABLE public.order_item ADD CONSTRAINT fk_order_item__orders FOREIGN KEY (order_id) REFERENCES orders(order_id);
-ALTER TABLE public.order_item ADD CONSTRAINT fk_order_item__product FOREIGN KEY (product_id) REFERENCES product(product_id);
+ALTER TABLE public.order_item ADD CONSTRAINT fk_order_item__orders FOREIGN KEY (order_id) REFERENCES orders(id);
+ALTER TABLE public.order_item ADD CONSTRAINT fk_order_item__product FOREIGN KEY (product_id) REFERENCES product(id);

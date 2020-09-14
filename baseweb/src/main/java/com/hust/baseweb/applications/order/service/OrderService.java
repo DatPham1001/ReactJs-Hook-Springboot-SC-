@@ -1,6 +1,7 @@
 package com.hust.baseweb.applications.order.service;
 
 import com.hust.baseweb.applications.order.model.createorder.CreateOrderIM;
+import com.hust.baseweb.applications.order.model.updateorder.UpdateOrderIM;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -23,4 +24,10 @@ public interface OrderService {
                                                        String search,
                                                        String sortBy,
                                                        String order);
+
+    /*ResponseEntity<?> deleteOrders(UpdateStatusOrDeleteOrdersIM im);
+
+    ResponseEntity<?> updateStatusOrdersToCompleted(UpdateStatusOrDeleteOrdersIM im);*/
+
+    ResponseEntity<?> updateOrder(UUID id, UpdateOrderIM updateOrderIM);
 }

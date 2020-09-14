@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -23,9 +24,12 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -202,9 +206,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex) {
+        ResponseSecondType response = new ResponseSecondType(403, "Forbidden", ex.getMessage());
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAll(final Exception ex, final WebRequest request) {
-        ResponseSecondType response = new ResponseSecondType(500, "Internal server error", ex.getMessage());
+        ResponseSecondType response = new ResponseSecondType(500, "Internal server error", ex.getLocalizedMessage());
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }

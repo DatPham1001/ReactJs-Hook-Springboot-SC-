@@ -136,10 +136,10 @@ export default function SignIn(props) {
               }
               autoComplete="current-password"
             />
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Ghi nhớ tôi!"
-            />
+            /> */}
             {props.isRequesting === true ? (
               <Button
                 disabled={true}
@@ -162,7 +162,7 @@ export default function SignIn(props) {
                 Đăng nhập
               </Button>
             )}
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Quên mật khẩu?
@@ -176,7 +176,7 @@ export default function SignIn(props) {
                   {"Chưa có tài khoản? Đăng kí."}
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </form>
         </div>
         <Box mt={8}>

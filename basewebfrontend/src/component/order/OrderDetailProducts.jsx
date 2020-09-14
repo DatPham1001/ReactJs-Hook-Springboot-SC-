@@ -22,7 +22,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import { useSelector, useDispatch } from "react-redux";
-import { axiosGet, authGet } from "Api";
+import { axiosGet, authGet, axiosPost } from "Api";
 import { useHistory } from "react-router";
 import AddShoppingCartTwoToneIcon from "@material-ui/icons/AddShoppingCartTwoTone";
 import { useState } from "react";
@@ -63,64 +63,93 @@ function OrderDetailProducts(props) {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
-  const {products, quantity, totalPayment} = props;
+  const {products, quantity, totalPayment, detailOrder} = props;
+  console.log("sanpham",products);
   const [product, setProduct] = useState();
   const [listProduct, setListProduct] = useState([]);
 
+  const [total, setTotal] = useState(0);
+
   const tableRef = useRef(null);
 
-  useEffect(()=>{
-    products.map((item, index)=>{
-        axiosGet(dispatch, token, `/product/${item.productId}`).then(resp=>{
-            let tmp = Object.assign({}, resp.data, {quantity: item.quantity});
-            setProduct(tmp);
-            console.log(tmp)
-            return tmp;
-        })
-    })
-  },[])
 
-  useEffect(()=>{
-    if(product !== undefined){
-        console.log(product)
-        let tmp = listProduct.map(item=>item);
-        tmp.push(product);
-        setListProduct(tmp);
-    }
-  }, [product]);
+
+    useEffect(()=>{
+        let productIds = products.map(item=>item.productId);
+        let tmpProducts = [];
+
+        axiosPost(dispatch, token, "/product/products-of-order", {productIds: productIds}).then(resp=>{
+            products.map(item => {
+                resp.data.map(product => {
+                    if(item.productId === product.id){
+                        tmpProducts.push(Object.assign({}, product, 
+                                                        {orderQuantity: item.orderQuantity}, 
+                                                        {price: item.price}),
+                                                        );
+                    }
+                })
+            })
+            setListProduct(tmpProducts);
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        })
+    },[]);
 
   const columns = [
-    {title: "Mã SP", field: "productCode", width: '10%', readonly: true},
-    {title: "Tên sản phẩm", field: "productName", width: '25%'},
-    {title: "Giá nhập", field: "price", width: '15%',
+    {title: "Mã SP", field: "code", width: '10%', readonly: true , cellStyle: {textAlign: 'center'}},
+    {title: "Tên sản phẩm", field: "name", width: '25%', cellStyle: {textAlign: 'center'}},
+    {title: "Giá nhập", field: "price", width: '15%',headerStyle: { textAlign: 'right' },type: 'numeric',
         render: rowData => <span>{currencyFormat(rowData.price)} </span>
     },
-    {title: "Tổng số lượng", field: "quantity", width: '15%',},
-    {title: "Đơn vị", field: "unit", width: '15%',
+    {title: "Số lượng", field: "orderQuantity", width: '15%',headerStyle: { textAlign: 'right' },type: 'numeric',},
+    {title: "Đơn vị", field: "uom", width: '15%',headerStyle: { textAlign: 'right' },type: 'numeric',
         render: rowData => (
-            <span>Chiếc</span>
+            <span>{rowData.uom} </span>
         )
     },
-    {title: "Thành tiền", field: "total", width: '20%',
-        render: rowData => (
-            <span>{currencyFormat(rowData.price * rowData.quantity)} </span>
-        )
+    {title: "Thành tiền", field: "total", width: '20%',headerStyle: { textAlign: 'right', paddingRight: 10 },cellStyle: {paddingRight: 10 },type: 'numeric',
+        render: rowData => {
+            return (
+            <span>{currencyFormat(rowData.price * rowData.orderQuantity)} </span>
+            )
+    }
     }, //headerStyle: { textAlign: 'right' }
 ];
 
+    const showTotal = ()=>{
+        let tmp = 0;
+        
+        if(listProduct.length > 0){
+            listProduct.map(item => {
+                tmp  = tmp + (item.price * item.orderQuantity);
+                console.log( item.price);
+        console.log( item.orderQuantity);
+            })
+        }
+        return currencyFormat(tmp);
+    }
+
   return (
     <Card className={classes.formControl}>
-      <CardHeader
+      {/* <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
             <AddShoppingCartTwoToneIcon />
           </Avatar>
         }
         title="Sản phẩm"
-      />
+      /> */}
+      <Typography variant="h5" component="h6" align="left" style={{display:'flex'}}>
+            <Avatar aria-label="recipe" className={classes.avatar} style={{margin: 10}}>
+                <AddShoppingCartTwoToneIcon />
+            </Avatar>
+            <div style={{margin: 10, marginLeft:0, paddingTop:4}}>Sản phẩm</div>
+            
+        </Typography> 
       <CardContent>
          
-          <div style={{ fontSize: 12 }}>
+          <div style={{ fontSize: 15 }}>
           <MaterialTable 
                 title="Danh sách sản phẩm đã chọn"
                 columns={columns}
@@ -130,8 +159,17 @@ function OrderDetailProducts(props) {
 
                 options={{
                     search: false, 
-                    headerStyle: { backgroundColor: '#dddddd' },
-                    cellStyle: {},
+                    headerStyle: { 
+                        backgroundColor: '#a5c3f2',
+                        paddingLeft:2,
+                        paddingRight:3, 
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                    },
+                    cellStyle: {
+                        paddingLeft:2,
+                        paddingRight:3,
+                    },
                     rowStyle: {
                         textAlign: 'left',
                     },
@@ -146,12 +184,12 @@ function OrderDetailProducts(props) {
                 components={{
                     Pagination:props=>(<div>
                         <div className="row">
-                            <div className="col-6"></div>
-                            <div className="col-6">
+                            <div className="col-4"></div>
+                            <div className="col-8">
                                 <div className="row">
                                     <div className="col-6">Số lượng</div>
                                     <div className="col-6 ">
-                                        <div className="float-right">{
+                                        <div className="float-right mx-3 my-1">{
                                             quantity
                                         } </div>
                                      </div>
@@ -159,22 +197,23 @@ function OrderDetailProducts(props) {
                                 <div className="row">
                                     <div className="col-6">Tổng tiền</div>
                                     <div className="col-6 ">
-                                        <div className="float-right">{
-                                           currencyFormat(totalPayment)
+                                        <div className="float-right mx-3 my-1">{
+                                            showTotal()
+                                        //    currencyFormat(total)
                                         } </div>
                                      </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-6">Chiết khấu</div>
                                     <div className="col-6 ">
-                                        <div className="float-right"> 0 </div>
+                                        <div className="float-right mx-3 my-1"> {currencyFormat(detailOrder.discount)} </div>
                                      </div>
                                 </div>
-                                <div className="row">
+                                <div className="row" style={{marginBottom:10}}>
                                     <div className="col-6">Số tiền cần trả</div>
                                     <div className="col-6 ">
-                                        <div className="float-right">{
-                                            currencyFormat(totalPayment)
+                                        <div className="float-right mx-3 my-1">{
+                                            currencyFormat(detailOrder.totalPayment)
                                         } </div>
                                      </div>
                                 </div>

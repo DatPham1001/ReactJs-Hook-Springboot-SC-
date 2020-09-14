@@ -5,9 +5,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.UUID;
 
 @Getter
@@ -15,10 +13,9 @@ import java.util.UUID;
 @Component
 public class CreateProductIM {
 
-    @NotBlank(message = "Được yêu cầu")
+    /*@NotBlank(message = "Được yêu cầu")*/
     private String productCode;
 
-    @NotNull(message = "Được yêu cầu")
     private UUID categoryId;
 
     @NotNull(message = "Tên không được để trống")
@@ -33,6 +30,8 @@ public class CreateProductIM {
     private Integer warehouseQuantity;
 
     private String linkImg;
+
+    private String uom;
 
     private String description;
 }

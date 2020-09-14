@@ -18,13 +18,15 @@ public interface ProductService {
 
     Product getProductById(UUID id);
 
-    Product updateProduct(ProductUpdateIM productUpdateIM, UUID id);
+    ResponseEntity<?> updateProduct(ProductUpdateIM productUpdateIM, UUID id);
 
     String deleteProduct(UUID id);
 
-    Page<GetProductsByNameOM> getAllProductsByName(String name, int page,int limit);
+    Page<GetProductsByNameOM> getAllProductsByName(String name, int page, int limit);
 
-    Page<GetProductsByCategoryIdOM> getProductsByCategoryId(UUID uuid,int page,int limit);
+    Page<GetProductsByCategoryIdOM> getProductsByCategoryId(UUID uuid, Integer page, Integer limit);
 
     ResponseEntity<?> getAllProductsOfOrder(List<UUID> productIds);
+
+    Integer getNumberOfProduct(UUID uuid);
 }

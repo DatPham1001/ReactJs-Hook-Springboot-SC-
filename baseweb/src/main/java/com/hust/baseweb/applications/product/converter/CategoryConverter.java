@@ -12,7 +12,7 @@ public class CategoryConverter {
     //Convert 1 đối tượng DTO sang Entity
     public Category toEntity(CategoryIM categoryIM) {
         Category category = new Category();
-        category.setCategoryName(categoryIM.getCategoryName());
+        category.setName(categoryIM.getCategoryName());
 //        categoryEntity.setEditDate(categoryDTO.getEditDate());
         category.setDescription(categoryIM.getDescription());
         return category;
@@ -21,8 +21,8 @@ public class CategoryConverter {
     //Convert 1 đối tượng Entity sang DTO
     public CategoryIM toIM(Category category) {
         CategoryIM categoryIM = new CategoryIM();
-        categoryIM.setCategoryId(category.getCategoryId());
-        categoryIM.setCategoryName(category.getCategoryName());
+        categoryIM.setCategoryId(category.getId());
+        categoryIM.setCategoryName(category.getName());
         categoryIM.setCreatedStamp(category.getCreatedStamp());
         categoryIM.setLastUpdatedStamp(category.getLastUpdatedStamp());
         categoryIM.setDescription(category.getDescription());
@@ -53,7 +53,7 @@ public class CategoryConverter {
 
     //Convert DTO to entiy using old Entity
     public Category toEntity(CategoryIM categoryIM, Category category) {
-        category.setCategoryName(categoryIM.getCategoryName());
+        category.setName(categoryIM.getCategoryName());
         category.setDescription(categoryIM.getDescription());
         return category;
     }

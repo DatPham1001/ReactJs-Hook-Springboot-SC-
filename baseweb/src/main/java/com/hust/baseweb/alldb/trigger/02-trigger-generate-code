@@ -1,0 +1,9 @@
+create trigger generate_product_code before insert or update on product
+    for each row EXECUTE procedure generate_product_code();
+
+create trigger generate_supplier_code before insert or update on supplier
+    for each row EXECUTE procedure generate_supplier_code();
+
+
+create trigger generate_order_code before insert or update on orders
+    for each row EXECUTE procedure generate_order_code();

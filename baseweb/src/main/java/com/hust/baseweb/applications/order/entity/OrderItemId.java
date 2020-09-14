@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -36,12 +35,12 @@ public class OrderItemId implements Serializable {
 
         OrderItemId id = (OrderItemId) o;
 
-        return Objects.equals(getOrder().getOrderId(), id.getOrder().getOrderId()) &&
-                Objects.equals(getProduct().getProductId(), id.getProduct().getProductId());
+        return Objects.equals(getOrder().getId(), id.getOrder().getId()) &&
+                Objects.equals(getProduct().getId(), id.getProduct().getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getOrder().getOrderId(), getProduct().getProductId());
+        return Objects.hash(getOrder().getId(), getProduct().getId());
     }
 }

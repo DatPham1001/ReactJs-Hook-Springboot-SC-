@@ -24,7 +24,7 @@ public class DTOPerson {
     @SuppressWarnings("rawtypes")
     @JsonIgnore
     public static Pair<Map<String, String>, Map<String, Pair>> mapPair = new Pair<Map<String, String>, Map<String, Pair>>(
-        mapDto2Entity, mapDto2Recursive);
+            mapDto2Entity, mapDto2Recursive);
 
     static {
         mapDto2Entity.put("partyId", "partyId");
@@ -53,12 +53,12 @@ public class DTOPerson {
     private String partyCode;
 
     public DTOPerson(
-        String fullName,
-        String status,
-        String partyType,
-        Date createdDate,
-        String userLoginId,
-        String partyCode
+            String fullName,
+            String status,
+            String partyType,
+            Date createdDate,
+            String userLoginId,
+            String partyCode
     ) {
         super();
         this.fullName = fullName;
@@ -72,13 +72,13 @@ public class DTOPerson {
     public DTOPerson(DPerson dPerson) {
         this.partyId = dPerson.getPartyId();
         this.fullName = dPerson.getPerson() != null
-            ?
-            dPerson.getPerson().getFirstName() +
-            " " +
-            dPerson.getPerson().getMiddleName() +
-            " " +
-            dPerson.getPerson().getLastName()
-            :
+                ?
+                dPerson.getPerson().getFirstName() +
+                        " " +
+                        dPerson.getPerson().getMiddleName() +
+                        " " +
+                        dPerson.getPerson().getLastName()
+                :
                 null;
         this.status = dPerson.getStatus();
         this.partyType = dPerson.getType().getPartyTypeId();

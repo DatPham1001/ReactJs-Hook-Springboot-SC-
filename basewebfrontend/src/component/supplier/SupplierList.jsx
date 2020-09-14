@@ -12,18 +12,19 @@ export default function SupplierList() {
   const history = useHistory();
 
   const columns = [
-    { title: "STT", field: "stt" },
+    { title: "STT", field: "stt", width: "7%", headerStyle: { paddingLeft: 16 }, cellStyle: { paddingLeft: 16 } },
+    { title: "Mã nhà cung cấp", field: "supplierCode" },
     { title: "Tên nhà cung cấp", field: "supplierName", filtering: false },
     { title: "Số điện thoại", field: "phoneNumber" },
     { title: "Email", field: "email" },
     { title: "Địa chỉ", field: "address" },
   ];
 
-    const tableRef = useRef(null);
+  const tableRef = useRef(null);
 
-    useEffect(()=>{
-        tableRef.current.dataManager.changePageSize(20);
-    }, [])
+  useEffect(() => {
+    tableRef.current.dataManager.changePageSize(20);
+  }, []);
 
   const [supplierList, setSupplierList] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -34,7 +35,7 @@ export default function SupplierList() {
       token,
       "/supplier?page=1&limit=3"
     );
-    console.log(supplierList.content);
+    console.log("list", supplierList.content);
     setSupplierList(supplierList.content);
   }
 
@@ -67,7 +68,6 @@ export default function SupplierList() {
         title={"Danh sách nhà cung cấp"}
         columns={columns}
         tableRef={tableRef}
-
         localization={{
           body: {
             emptyDataSourceMessage: "Không bản ghi để hiển thị.",
@@ -79,10 +79,10 @@ export default function SupplierList() {
           pagination: {
             labelRowsSelect: "hàng",
             labelDisplayedRows: "{from}-{to} của {count}",
-            nextTooltip: "Trang đầu",
+            nextTooltip: "Trang tiếp",
             lastTooltip: "Trang cuối",
-            firstTooltip: "Trang tiếp",
-            previousTooltip: "Trang trước",
+            firstTooltip: "Trang đầu",
+            previousTooltip: "Trang sau",
           },
         }}
         data={(query) =>
@@ -101,8 +101,8 @@ export default function SupplierList() {
               "/supplier" +
                 "?page=" +
                 (query.page + 1) +
-                "&limit=" +
-                query.pageSize +
+                "&limit=20" +
+                // query.pageSize +
                 filterParam
             ).then(
               (res) => {
@@ -142,11 +142,23 @@ export default function SupplierList() {
         }}
         options={{
           search: true,
+          debounceInterval: 500,
+          headerStyle: {
+            backgroundColor: "#a5c3f2",
+            fontWeight: "bold",
+            paddingLeft: 8,
+            textAlign: "left",
+          },
+          cellStyle: {
+            paddingLeft: 8,
+            // paddingRight: 0,
+            textAlign: 'left',
+          },
           // filtering: true,
-          rowStyle: (rowData) => ({
-            backgroundColor:
-              selectedRow === rowData.tableData.id ? "#EEE" : "#FFF",
-          }),
+          //   rowStyle: (rowData) => ({
+          //     backgroundColor:
+          //       selectedRow === rowData.tableData.id ? "#EEE" : "#FFF",
+          //   }),
         }}
       />
     </div>

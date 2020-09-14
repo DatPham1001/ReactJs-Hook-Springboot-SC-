@@ -27,11 +27,11 @@ public class Supplier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID supplierId;
+    private UUID id;
 
-    private String supplierCode;
+    private String code;
 
-    private String supplierName;
+    private String name;
 
     private String phoneNumber;
 

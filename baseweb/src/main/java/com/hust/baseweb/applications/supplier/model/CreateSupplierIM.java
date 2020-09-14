@@ -3,7 +3,6 @@ package com.hust.baseweb.applications.supplier.model;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -13,8 +12,7 @@ public class CreateSupplierIM {
 
     @NotBlank(message = "Được yêu cầu")
     private String supplierName;
-
-    @NotBlank(message = "Được yêu cầu")
+    
     private String supplierCode;
 
     @NotBlank(message = "Được yêu cầu")
@@ -26,5 +24,5 @@ public class CreateSupplierIM {
     @NotBlank(message = "Được yêu cầu")
     private String address;
 
-    private List<String> categoryIds;
+//    private List<String> categoryIds;
 }

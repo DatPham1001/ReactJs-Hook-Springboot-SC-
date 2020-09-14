@@ -66,28 +66,36 @@ function OrderDetailSupplier(props) {
   const dispatch = useDispatch();
   const token = useSelector(state => state.auth.token);
 
-  const {id} = props;
+  const { supplier} = props;
   console.log(props.data)
   const [data, setData] = useState({});
 
   useEffect(()=>{
-    axiosGet(dispatch, token , `/supplier/${id}`).then(resp =>{
-        setData(resp.data);
-        console.log(resp.data)
-    })
+    // axiosGet(dispatch, token , `/supplier/${id}`).then(resp =>{
+    //     setData(resp.data);
+    //     console.log(resp.data)
+    // })
+    setData(supplier);
   }, [])
   
 
   return (
     <Card className={classes.formControl}>
-      <CardHeader
+      {/* <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
             <GroupAddIcon />
           </Avatar>
         }
         title="Nhà cung cấp"
-      />
+      /> */}
+      <Typography variant="h5" component="h6" align="left" style={{display:'flex'}}>
+            <Avatar aria-label="recipe" className={classes.avatar} style={{margin: 10}}>
+                <GroupAddIcon />
+            </Avatar>
+            <div style={{margin: 10, marginLeft:0, paddingTop:4}}>Nhà cung cấp</div>
+            
+        </Typography> 
       <CardContent>
       <form noValidate autoComplete="off">
             <div>

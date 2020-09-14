@@ -45,6 +45,6 @@ public class DPersonUserLogin {
     @CreatedDate
     private Date createdStamp;
 
-@LastModifiedDate
+    @LastModifiedDate
     private Date lastUpdatedStamp;
 }

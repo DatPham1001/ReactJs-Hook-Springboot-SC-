@@ -219,7 +219,7 @@ function UserCreate(props) {
               </TextField>
               <KeyboardDatePicker
                 disableToolbar
-                variant="inline"
+                variant="outlined"
                 format="MM/dd/yyyy"
                 margin="normal"
                 id="date-picker-inline"

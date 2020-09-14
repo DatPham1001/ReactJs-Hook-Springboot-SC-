@@ -8,68 +8,80 @@ import com.hust.baseweb.applications.product.repo.CategoryRepo;
 import com.hust.baseweb.applications.product.repo.ProductRepo;
 import com.hust.baseweb.applications.supplier.repo.SupplierRepo;
 import com.hust.baseweb.exception.ResponseFirstType;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ProductServiceImpl implements ProductService {
-    private final Product product;
-    private final ProductConverter productConverter;
-    private final CategoryRepo categoryRepo;
-    private final ProductRepo productRepo;
-    private final SupplierRepo supplierRepo;
-
-    @Autowired
-    public ProductServiceImpl(Product product, ProductConverter productConverter, CategoryRepo categoryRepository, ProductRepo productRepository, SupplierRepo supplierRepo) {
-        this.product = product;
-        this.productConverter = productConverter;
-        this.categoryRepo = categoryRepository;
-        this.productRepo = productRepository;
-        this.supplierRepo = supplierRepo;
-    }
+    private Product product;
+    private ProductConverter productConverter;
+    private CategoryRepo categoryRepo;
+    private ProductRepo productRepo;
+    private SupplierRepo supplierRepo;
 
     @Override
     public ResponseEntity<?> createProduct(CreateProductIM createProductIM) {
         ResponseFirstType response;
-        Category category = categoryRepo.findByCategoryIdAndDeletedFalse(createProductIM.getCategoryId());
-        Product product = productRepo.findByProductCodeAndDeletedFalse(createProductIM.getProductCode());
 
-        if (product != null) {
-            response = new ResponseFirstType(400);
+        Product product;
+        //Error productCode exist
+        if (createProductIM.getProductCode() != null) {
+            product = productRepo.findByCodeAndDeletedFalse(createProductIM.getProductCode());
+            if (product != null) {
+                response = new ResponseFirstType(400);
 
-            response.addError("productCode", "existed",
-                    "Mã sản phẩm đã tồn tại");
-
-            return ResponseEntity.status(response.getStatus()).body(response);
+                response.addError("productCode", "invalid",
+                        "Mã sản phẩm đã tồn tại");
+                return ResponseEntity.status(response.getStatus()).body(response);
+            }
+        }
+        if(createProductIM.getCategoryId() == null) {
+            Category category = categoryRepo.getOne(UUID.fromString("cc91ed5a-e6a4-11ea-991a-005056c00001"));
+            product = new Product();
+            product.setCode(createProductIM.getProductCode());
+            product.setCategory(category);
+            product.setName(createProductIM.getProductName());
+            product.setPrice(createProductIM.getPrice());
+            product.setUom(createProductIM.getUom());
+            product.setImageLink(createProductIM.getLinkImg());
+            product.setInventoryNumber(createProductIM.getWarehouseQuantity());
+            product.setDescription(createProductIM.getDescription());
+            productRepo.save(product);
+        }
+        if(createProductIM.getCategoryId() != null) {
+            Category category = categoryRepo.findByIdAndDeletedFalse(createProductIM.getCategoryId());
+            product = new Product();
+            product.setCode(createProductIM.getProductCode());
+            product.setCategory(category);
+            product.setName(createProductIM.getProductName());
+            product.setPrice(createProductIM.getPrice());
+            product.setUom(createProductIM.getUom());
+            product.setImageLink(createProductIM.getLinkImg());
+            product.setInventoryNumber(createProductIM.getWarehouseQuantity());
+            product.setDescription(createProductIM.getDescription());
+            productRepo.save(product);
         }
 
-        if (category == null) {
-            response = new ResponseFirstType(404);
+//        if (category == null) {
+//            response = new ResponseFirstType(404);
+//
+//            response.addError("categoryId", "not exist",
+//                    "Danh mục không tồn tại");
+//
+//            return ResponseEntity.status(response.getStatus()).body(response);
+//        }
 
-            response.addError("categoryId", "not exist",
-                    "Không tìm thấy danh mục có mã : " + createProductIM.getCategoryId());
-
-            return ResponseEntity.status(response.getStatus()).body(response);
-        }
-
-        product = new Product();
-
-        product.setProductCode(createProductIM.getProductCode());
-        product.setCategory(category);
-        product.setProductName(createProductIM.getProductName());
-        product.setPrice(createProductIM.getPrice());
-        product.setLinkImg(createProductIM.getLinkImg());
-        product.setWarehouseQuantity(createProductIM.getWarehouseQuantity());
-        product.setDescription(createProductIM.getDescription());
-
-        productRepo.save(product);
         return ResponseEntity.status(201).body("Đã tạo");
     }
 
@@ -82,17 +94,29 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(ProductUpdateIM productUpdateIM, UUID id) {
-        Category category = categoryRepo.getOne(productUpdateIM.getCategoryId());
+    public ResponseEntity<?> updateProduct(ProductUpdateIM productUpdateIM, UUID id) {
+        ResponseFirstType response;
         Product oldProduct = productRepo.getOne(id);
-        oldProduct.setProductName(productUpdateIM.getProductName());
+        Product product = productRepo.findByCodeAndDeletedFalse(productUpdateIM.getProductCode());
+        if(product != null ) {
+            if (!product.getCode().equals(oldProduct.getCode())) {
+                response = new ResponseFirstType(400);
+                response.addError("productCode", "existed", "Mã sản phẩm đã tồn tại");
+                return ResponseEntity.status(response.getStatus()).body(response);
+            }
+        }
+        Category category = categoryRepo.getOne(productUpdateIM.getCategoryId());
+
+        oldProduct.setName(productUpdateIM.getProductName());
+        oldProduct.setCode(productUpdateIM.getProductCode());
         oldProduct.setPrice(productUpdateIM.getPrice());
-        oldProduct.setWarehouseQuantity(productUpdateIM.getWarehouseQuantity());
-        oldProduct.setLinkImg(productUpdateIM.getLinkImg());
+        oldProduct.setUom(productUpdateIM.getUom());
+        oldProduct.setInventoryNumber(productUpdateIM.getWarehouseQuantity());
+        oldProduct.setImageLink(productUpdateIM.getLinkImg());
         oldProduct.setDescription(productUpdateIM.getDescription());
         oldProduct.setCategory(category);
         productRepo.save(oldProduct);
-        return oldProduct;
+        return ResponseEntity.ok().body("Updated");
     }
 
     @Override
@@ -111,20 +135,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<GetProductsByCategoryIdOM> getProductsByCategoryId(UUID uuid, int page, int limit) {
+    public Page<GetProductsByCategoryIdOM> getProductsByCategoryId(UUID uuid, Integer page, Integer limit) {
 
         return productRepo.getProductsByCategoryId(uuid, PageRequest.of(page, limit));
     }
 
     @Override
     public ResponseEntity<?> getAllProductsOfOrder(List<UUID> productIds) {
-        List<Product> products = productRepo.findAllByProductIdInAndDeletedFalse(productIds);
+        List<Product> products = productRepo.findAllByIdInAndDeletedFalse(productIds);
 
-        return ResponseEntity.ok().body(products.stream().map(p -> new GetAllProductsOfOrderOM(p.getProductId(),
-                p.getProductCode(),
-                p.getProductName(),
-                p.getPrice(), p.
-                getWarehouseQuantity())).collect(Collectors.toList()));
+        return ResponseEntity.ok().body(products.stream().map(p -> new GetAllProductsOfOrderOM(p.getId(),
+                p.getCode(),
+                p.getName(),
+                p.getPrice(),
+                p.getInventoryNumber(),
+                p.getUom()
+        )).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Integer getNumberOfProduct(UUID uuid) {
+        return productRepo.getNumberOfProduct(uuid);
     }
 }
 

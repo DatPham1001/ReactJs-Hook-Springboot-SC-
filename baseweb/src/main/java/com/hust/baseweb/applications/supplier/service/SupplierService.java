@@ -17,11 +17,11 @@ public interface SupplierService {
 
     ResponseEntity<?> createSupplier(CreateSupplierIM supplier);
 
-    Supplier getSupplier(UUID id);
+    ResponseEntity<?> getSupplier(UUID id);
 
-    void updateSupplier(UpdateSupplierIM supplierIM);
+    ResponseEntity<?> updateSupplier(UpdateSupplierIM supplierIM);
 
     Page<ListSupplierOM> getListSupplier(Integer page, Integer limit, String search);
 
-    int deleteSupplier(UUID id);
+    ResponseEntity<?> deleteSupplier(UUID id);
 }

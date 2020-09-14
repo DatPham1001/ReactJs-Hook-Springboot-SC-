@@ -1,9 +1,6 @@
 package com.hust.baseweb.applications.product.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.hust.baseweb.applications.supplier.entity.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +11,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -25,9 +25,9 @@ import java.util.*;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID categoryId;
+    private UUID id;
 
-    private String categoryName;
+    private String name;
 
     private String description;
 

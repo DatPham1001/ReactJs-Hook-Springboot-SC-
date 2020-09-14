@@ -33,6 +33,7 @@ export const logout = () => {
   };
 };
 
+// login is an async action creator which returns a thunk. The thunk can then dispatch other actions.
 export const login = (username, password) => {
   return (dispatch) => {
     dispatch(requesting()); // create a action

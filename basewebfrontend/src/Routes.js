@@ -22,7 +22,7 @@ function Routes(props) {
           path="/userlogin/change-password/:username"
         />
         <Route component={SignInContainer} path="/login" />
-        <Route component={MainAppRoute} path="*" />
+        <PrivateRoute component={MainAppRoute} path="*" />
       </Switch>
     </Suspense>
   );

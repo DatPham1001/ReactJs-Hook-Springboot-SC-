@@ -12,11 +12,11 @@ public class ProductConverter {
     //Convert 1 đối tượng DTO sang Entity
     public Product toEntity(CreateProductIM createProductIM) {
         Product product = new Product();
-        createProductIM.setProductCode(product.getProductCode());
-        product.setProductName(createProductIM.getProductName());
-        product.setLinkImg(createProductIM.getLinkImg());
+        createProductIM.setProductCode(product.getCode());
+        product.setName(createProductIM.getProductName());
+        product.setImageLink(createProductIM.getLinkImg());
         product.setPrice(createProductIM.getPrice());
-        product.setWarehouseQuantity(createProductIM.getWarehouseQuantity());
+        product.setInventoryNumber(createProductIM.getWarehouseQuantity());
         product.setDescription(createProductIM.getDescription());
         return product;
     }
@@ -24,11 +24,11 @@ public class ProductConverter {
     //Convert 1 đối tượng Entity sang DTO
     public CreateProductIM toDTO(Product product) {
         CreateProductIM createProductIM = new CreateProductIM();
-        createProductIM.setProductName(product.getProductName());
-        createProductIM.setLinkImg(product.getLinkImg());
+        createProductIM.setProductName(product.getName());
+        createProductIM.setLinkImg(product.getImageLink());
         createProductIM.setDescription(product.getDescription());
         createProductIM.setPrice(product.getPrice());
-        createProductIM.setWarehouseQuantity(product.getWarehouseQuantity());
+        createProductIM.setWarehouseQuantity(product.getInventoryNumber());
 
 //        productDTO.setCategoryId(productEntity.getCategoryEntity());
         return createProductIM;
@@ -37,10 +37,10 @@ public class ProductConverter {
 
     //Conver DTO to Entity using old Entity
     public Product toEntity(CreateProductIM createProductIM, Product product) {
-        product.setProductName(createProductIM.getProductName());
-        product.setLinkImg(createProductIM.getLinkImg());
+        product.setName(createProductIM.getProductName());
+        product.setImageLink(createProductIM.getLinkImg());
         product.setPrice(createProductIM.getPrice());
-        product.setWarehouseQuantity(createProductIM.getWarehouseQuantity());
+        product.setInventoryNumber(createProductIM.getWarehouseQuantity());
         product.setDescription(createProductIM.getDescription());
         return product;
     }

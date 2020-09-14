@@ -10,7 +10,7 @@ import {
   Button,
   CardActions,
   CircularProgress,
-  Box,
+  Box,Tooltip
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
@@ -25,6 +25,8 @@ import { useHistory } from "react-router";
 import AddShoppingCartTwoToneIcon from "@material-ui/icons/AddShoppingCartTwoTone";
 import { useState } from "react";
 import OrderCreateProductsDetail from "./OrderCreateProductsDetail";
+import { currencyFormat, numberDecimalFormat} from 'utils/NumberFormat'
+// import Tooltip from '@atlaskit/tooltip';
 
 OrderCreateProducts.propTypes = {};
 const useStyles = makeStyles((theme) => ({
@@ -53,6 +55,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const dot = (color = '#ccc') => ({
+    alignItems: 'center',
+    display: 'flex',
+  
+    ':before': {
+    //   backgroundColor: color,
+        backgroundImage: "url("+'https://s3.amazonaws.com/iconbros/icons/icon_pngs/000/000/220/original/search.png?1510300432'+")",
+        backgroundSize:"cover",
+        borderRadius: 10,
+      content: '" "',
+      display: 'block',
+      marginRight: 8,
+      height: 15,
+      width: 15,
+    },
+});
+
 function OrderCreateProducts(props) {
   const classes = useStyles();
   const { control, handleSubmit, watch } = useForm();
@@ -70,42 +89,13 @@ function OrderCreateProducts(props) {
   const [pre, setPre] = useState(false);
 
   const [search, setSearch] = useState("");
+  const [searchSupplier, setSearchSupplier] = useState({value:"1", label: "Tìm kiếm"});
 
-  useEffect(() => {
-    axiosGet(dispatch, token, `/product?page=${page - 1}&limit=${limit}`).then(
-      (resp) => {
-        let content = resp.data.content;
-        // console.log(content);
-        let data = content.map((item) => {
-          let value = item.productId;
-          let label = item.productName;
-          return { value, label };
-        });
-        // console.log(data);
-        let elements = resp.data.numberOfElements;
-        if (elements < limit) {
-          let number = limit - elements;
-          for (let i = 0; i < number; i++) {
-            data.push({ value: "", label: ".", isDisabled: true });
-          }
-        }
+  const [showWarning, setShowWarning] = useState(true);
 
-        setListProduct(data);
-        console.log(resp.data);
+  const [showColor, setShowColor] = useState('');
+  const [timeoutSearch, setTimeoutSearch] = useState();
 
-        if (page === resp.data.totalPages) {
-          setNext(true);
-        } else {
-          setNext(false);
-        }
-        if (page <= 1) {
-          setPre(true);
-        } else {
-          setPre(false);
-        }
-      }
-    );
-  }, []);
 
   useEffect(() => {
     if (search !== "") {
@@ -122,12 +112,18 @@ function OrderCreateProducts(props) {
         token,
         `/product?page=${page - 1}&limit=${limit}&name=${search}`
       ).then((resp) => {
-        console.log(resp.data);
+        
         let content = resp.data.content;
         let data = content.map((item) => {
+            // console.log("product",item);
+
           let value = item.productId;
-          let label = item.productName;
-          return { value, label };
+          let label = `${item.productCode} - ${item.productName}`;
+
+          let img = item.linkImg;
+          let price = item.price;
+          let quantity = item.warehouseQuantity;
+          return { value, label, img, price, quantity };
         });
         // console.log(data);
         let elements = resp.data.numberOfElements;
@@ -174,11 +170,41 @@ function OrderCreateProducts(props) {
       }, ms);
     });
 
-  console.log(products);
+//   console.log(products);
   const MenuList = (props) => {
+    //   console.log("children",props.children);
+    //   props.children.map(item => {
+    //       console.log("item",item.props.data);
+    //   })
+    // setShowColor(props.children[0].props.data.value);
     return (
-      <components.MenuList {...props}>
-        <div className="">{props.children}</div>
+      <components.MenuList {...props} o>
+
+          
+        {props.children.length > 0 ? <div className="">
+            
+            <div>
+                {props.children.map((item, index)=> (
+                     <div  > 
+                        <div key={index} style={{display: 'flex'}}>
+                            {item.props.data.label !== '.' ? <img src={item.props.data.img} alt="" height={36} width={36} /> : ""}
+                            <div style={{width: 500}} onMouseOver={()=>{
+                                // console.log(item.props.data.value);
+                                // setShowColor(item.props.data.value);
+                            }} >{item}</div>
+                            {item.props.data.label !== '.' ? <div className="float-right" style={{backgroundColor:'#deebff', paddingRight: 5, height: 42, width: 200, borderStyle: 'ridge', paddingBottom:5}}>
+                                <div >giá: <b>{currencyFormat(item.props.data.price)}</b> </div>
+                                <div style={{marginTop: 0}}>số lượng: <b>{numberDecimalFormat(item.props.data.quantity)}</b></div>
+                            </div> : ''}
+                        </div>
+                        <hr class="light" style={{margin:0}}></hr>
+                    </div>
+                ))}
+            </div>
+            
+        </div> : <div className="text-center">Không tìm thấy sản phẩm nào</div>}
+        
+        
 
         <div className="float-right my-1 mx-1">
           <Button
@@ -203,44 +229,71 @@ function OrderCreateProducts(props) {
   };
 
   const handleClear = (productId) => {
-    console.log(productId);
+    // console.log("id",productId);
     let tmpProducts = products;
-
+    
     let arr = tmpProducts.filter((item) => item.productId !== productId);
+    // console.log("arr ",arr)
     setProducts(arr);
   };
 
   return (
     <Card className={classes.formControl}>
-      <CardHeader
+      {/* <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
             <AddShoppingCartTwoToneIcon />
           </Avatar>
         }
-        title="Sản phẩm"
-      />
+        style={{fontWeight: 'bold',}}
+        // title="Sản phẩm"
+      /> */}
+      
+        <Typography variant="h5" component="h6" align="left" style={{display:'flex'}}>
+            <Avatar aria-label="recipe" className={classes.avatar} style={{margin: 10}}>
+                <AddShoppingCartTwoToneIcon />
+            </Avatar>
+            <div style={{margin: 10, marginLeft:0, paddingTop:4}}>Sản phẩm</div>
+            
+        </Typography> 
+
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row " style={{ paddingTop: "0" }}>
             <div className="col-6 ">
               <Typography variant="h6" component="h6" align="left">
-                Chọn nhà các sản phẩm
+                Chọn các sản phẩm
               </Typography>
             </div>
           </div>
 
           <Controller
             name="iceCreamType"
-            as={Select}
+            as={<Select
+                noOptionsMessage={() => 'Không tìm thấy sản phẩm cần tìm'} 
+                styles={{
+                    singleValue: (styles) => ({ ...styles, ...dot()})
+                }}
+            />}
             options={listProduct}
             components={{ MenuList }}
             control={control}
             className={classes.selectProduct}
             defaultValue=""
+            value={searchSupplier}
+
+            // closeMenuOnSelect={false}
+            valueName="abc"
             placeholder="Tìm kiếm"
+            
             onInputChange={(event) => {
-              setSearch(event);
+                if(timeoutSearch !== undefined){
+                    clearTimeout(timeoutSearch);
+                }
+                let time = setTimeout(()=>{
+                    setSearch(event);
+                }, 500);
+                setTimeoutSearch(time);
             }}
             onChange={(value) => {
               let id = value[0].value;
@@ -267,23 +320,27 @@ function OrderCreateProducts(props) {
                   let product = Object.assign(
                     {},
                     resp.data,
-                    { key: resp.data.productId },
+                    { productId: resp.data.id },
                     { quantity: 1 },
                     { unit: "Chiếc" },
                     { total: resp.data.price }
                   );
-
+                    setShowWarning(false);
                   setProducts([...products, product]);
                   console.log([...products, product]);
                 });
               }
             }}
+            
           />
+          {/* {showWarning && (<div style={{color:'red'}}>{props.warningProducts} </div>)} */}
           <br />
-          <div style={{ fontSize: 12 }}>
+          <div style={{ fontSize: 13 }}>
             <OrderCreateProductsDetail
               products={products}
               handleClear={handleClear}
+              handleListProduct={props.handleListProduct}
+              handleDiscount={props.handleDiscount}
             />
           </div>
         </form>

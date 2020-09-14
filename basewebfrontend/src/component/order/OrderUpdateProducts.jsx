@@ -20,11 +20,12 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import { useSelector, useDispatch } from "react-redux";
-import { axiosGet } from "Api";
+import { axiosGet, axiosPost } from "Api";
 import { useHistory } from "react-router";
 import AddShoppingCartTwoToneIcon from "@material-ui/icons/AddShoppingCartTwoTone";
 import { useState } from "react";
 import OrderUpdateProductsDetail from "./OrderUpdateProductsDetail";
+import { currencyFormat, numberDecimalFormat} from 'utils/NumberFormat'
 
 OrderUpdateProducts.propTypes = {};
 const useStyles = makeStyles((theme) => ({
@@ -53,13 +54,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const dot = (color = '#ccc') => ({
+    alignItems: 'center',
+    display: 'flex',
+  
+    ':before': {
+    //   backgroundColor: color,
+        backgroundImage: "url("+'https://s3.amazonaws.com/iconbros/icons/icon_pngs/000/000/220/original/search.png?1510300432'+")",
+        backgroundSize:"cover",
+        borderRadius: 10,
+      content: '" "',
+      display: 'block',
+      marginRight: 8,
+      height: 15,
+      width: 15,
+    },
+});
+
 function OrderUpdateProducts(props) {
   const classes = useStyles();
   const { control, handleSubmit, watch } = useForm();
   const history = useHistory();
 
-  const {oldProducts, quantity, totalPayment} = props;
-  const [product, setProduct] = useState();
+  const { orderItems } = props;
 
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
@@ -73,58 +90,38 @@ function OrderUpdateProducts(props) {
   const [pre, setPre] = useState(false);
 
   const [search, setSearch] = useState("");
-
-  useEffect(()=>{
-    oldProducts.map((item, index)=>{
-        axiosGet(dispatch, token, `/product/${item.productId}`).then(resp=>{
-            let tmp = Object.assign({}, resp.data, {quantity: item.quantity});
-            setProduct(tmp);
-            console.log(tmp)
-            return tmp;
-        })
-    })
-  },[])
-
-  useEffect(()=>{
-    if(product !== undefined){
-        console.log(product)
-        let tmp = listProduct.map(item=>item);
-        tmp.push(product);
-        setProducts(tmp);
-    }
-  }, [product]);
+  const [timeoutSearch, setTimeoutSearch] = useState();
 
   useEffect(() => {
-    axiosGet(dispatch, token, `/product?page=${page - 1}&limit=${limit}`).then(
-      (resp) => {
-        let content = resp.data.content;
-        let data = content.map((item) => {
-          let value = item.productId;
-          let label = item.productName;
-          return { value, label };
+    let productIds = orderItems.map((item) => item.productId);
+    let tmpProducts = [];
+
+    axiosPost(dispatch, token, "/product/products-of-order", {
+      productIds: productIds,
+    })
+      .then((resp) => {
+        orderItems.map((item) => {
+          resp.data.map((product) => {
+            if (item.productId === product.id) {
+              tmpProducts.push(
+                Object.assign(
+                  {},
+                  product,
+                  { quantity: item.orderQuantity },
+                  { price: item.price },
+                  {productId: product.id},
+
+                )
+              );
+            }
+          });
         });
-        let elements = resp.data.numberOfElements;
-        if (elements < limit) {
-          let number = limit - elements;
-          for (let i = 0; i < number; i++) {
-            data.push({ value: "", label: ".", isDisabled: true });
-          }
-        }
-
-        setListProduct(data);
-
-        if (page === resp.data.totalPages) {
-          setNext(true);
-        } else {
-          setNext(false);
-        }
-        if (page <= 1) {
-          setPre(true);
-        } else {
-          setPre(false);
-        }
-      }
-    );
+        setProducts(tmpProducts);
+        
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
   }, []);
 
   useEffect(() => {
@@ -146,8 +143,12 @@ function OrderUpdateProducts(props) {
         let content = resp.data.content;
         let data = content.map((item) => {
           let value = item.productId;
-          let label = item.productName;
-          return { value, label };
+          let label = `${item.productCode} - ${item.productName}`;
+
+          let img = item.linkImg;
+          let price = item.price;
+          let quantity = item.warehouseQuantity;
+          return { value, label, img, price, quantity };
         });
         // console.log(data);
         let elements = resp.data.numberOfElements;
@@ -194,11 +195,34 @@ function OrderUpdateProducts(props) {
       }, ms);
     });
 
-  console.log(products);
+  //   console.log(products);
   const MenuList = (props) => {
     return (
       <components.MenuList {...props}>
-        <div className="">{props.children}</div>
+        {/* <div className="">{props.children}</div> */}
+
+        {props.children.length > 0 ? <div className="">
+            
+            <div>
+                {props.children.map((item, index)=> (
+                     <div  > 
+                        <div key={index} style={{display: 'flex'}}>
+                            {item.props.data.label !== '.' ? <img src={item.props.data.img} alt="" height={36} width={36} /> : ""}
+                            <div style={{width: 500}} onMouseOver={()=>{
+                                // console.log(item.props.data.value);
+                                // setShowColor(item.props.data.value);
+                            }} >{item}</div>
+                            {item.props.data.label !== '.' ? <div className="float-right" style={{backgroundColor:'#deebff', paddingRight: 5, height: 40, width: 200, borderStyle: 'ridge', paddingBottom:5}}>
+                                <div >giá: <b>{currencyFormat(item.props.data.price)}</b> </div>
+                                <div style={{marginTop: 0}}>số lượng: <b>{numberDecimalFormat(item.props.data.quantity)}</b></div>
+                            </div> : ''}
+                        </div>
+                        <hr class="light" style={{margin:0}}></hr>
+                    </div>
+                ))}
+            </div>
+            
+        </div> : <div className="text-center">Không tìm thấy sản phẩm nào</div>}
 
         <div className="float-right my-1 mx-1">
           <Button
@@ -227,40 +251,62 @@ function OrderUpdateProducts(props) {
     let tmpProducts = products;
 
     let arr = tmpProducts.filter((item) => item.productId !== productId);
+    console.log("product: ", products);
+    console.log("arr : ", arr);
     setProducts(arr);
   };
 
   return (
     <Card className={classes.formControl}>
-      <CardHeader
+      {/* <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
             <AddShoppingCartTwoToneIcon />
           </Avatar>
         }
         title="Sản phẩm"
-      />
+      /> */}
+      <Typography variant="h5" component="h6" align="left" style={{display:'flex'}}>
+            <Avatar aria-label="recipe" className={classes.avatar} style={{margin: 10}}>
+                <AddShoppingCartTwoToneIcon />
+            </Avatar>
+            <div style={{margin: 10, marginLeft:0, paddingTop:4}}>Sản phẩm</div>
+            
+        </Typography> 
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row " style={{ paddingTop: "0" }}>
             <div className="col-6 ">
               <Typography variant="h6" component="h6" align="left">
-                Chọn nhà các sản phẩm
+                Chọn các sản phẩm
               </Typography>
             </div>
           </div>
 
           <Controller
             name="iceCreamType"
-            as={Select}
+            as={<Select 
+                styles={{
+                    singleValue: (styles) => ({ ...styles, ...dot()})
+                }}
+            />}
             options={listProduct}
             components={{ MenuList }}
             control={control}
             className={classes.selectProduct}
             defaultValue=""
-            placeholder="Tìm kiếm"
+
+            value={{value:1, label: "Tìm kiếm"}}
+            valueName="Tìm kiếm"
             onInputChange={(event) => {
-              setSearch(event);
+            //   setSearch(event);
+                if(timeoutSearch !== undefined){
+                    clearTimeout(timeoutSearch);
+                }
+                let time = setTimeout(()=>{
+                    setSearch(event);
+                }, 500);
+                setTimeoutSearch(time);
             }}
             onChange={(value) => {
               let id = value[0].value;
@@ -287,10 +333,12 @@ function OrderUpdateProducts(props) {
                   let product = Object.assign(
                     {},
                     resp.data,
-                    { key: resp.data.productId },
+                    { productId: resp.data.id },
                     { quantity: 1 },
                     { unit: "Chiếc" },
-                    { total: resp.data.price }
+                    { total: resp.data.price },
+                    {productCode: resp.data.code},
+                    {productName: resp.data.name},
                   );
 
                   setProducts([...products, product]);
@@ -299,11 +347,15 @@ function OrderUpdateProducts(props) {
               }
             }}
           />
+          <div style={{ color: "red" }}>{props.warningProducts} </div>
           <br />
-          <div style={{ fontSize: 12 }}>
+          <div style={{ fontSize: 13 }}>
             <OrderUpdateProductsDetail
               products={products}
               handleClear={handleClear}
+              handleListProduct={props.handleListProduct}
+              handleDiscount={props.handleDiscount}
+              oldDiscount={props.oldDiscount}
             />
           </div>
         </form>

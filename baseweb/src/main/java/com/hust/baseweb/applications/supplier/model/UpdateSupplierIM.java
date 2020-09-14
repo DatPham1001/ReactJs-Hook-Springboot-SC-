@@ -13,11 +13,13 @@ public class UpdateSupplierIM {
 
     private String supplierName;
 
+    private String supplierCode;
+
     private String phoneNumber;
 
     private String email;
 
     private String address;
 
-    private List<String> categoryIds;
+//    private List<String> categoryIds;
 }

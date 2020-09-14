@@ -7,8 +7,8 @@ public class SortAndFiltersInput {
     private SortCriteria[] sort;
 
     public SortAndFiltersInput(
-        SearchCriteria[] filters,
-        SortCriteria[] sort
+            SearchCriteria[] filters,
+            SortCriteria[] sort
     ) {
         super();
         this.filters = filters;

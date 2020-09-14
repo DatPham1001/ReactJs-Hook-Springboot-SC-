@@ -222,32 +222,6 @@ CREATE TABLE uom
     CONSTRAINT fk_uom_type_id FOREIGN KEY (uom_type_id) REFERENCES uom_type (uom_type_id)
 );
 
-CREATE TABLE content_type
-(
-    content_type_id    VARCHAR(60) NOT NULL,
-    parent_type_id     VARCHAR(60),
-    description        VARCHAR(10000),
-    last_updated_stamp TIMESTAMP,
-    created_stamp      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT pk_content_type PRIMARY KEY (content_type_id),
-    CONSTRAINT cntnt_type_parent FOREIGN KEY (parent_type_id) REFERENCES content_type (content_type_id)
-);
-
-CREATE TABLE content
-(
-    content_id         UUID NOT NULL,
-    content_type_id    VARCHAR(60),
-    mime_type          VARCHAR(255),
-    character_set      VARCHAR(100),
-    url                VARCHAR(255),
-    created_at         TIMESTAMP,
-    last_updated_at    TIMESTAMP,
-    last_updated_stamp TIMESTAMP,
-    created_stamp      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT pk_content PRIMARY KEY (content_id),
-    CONSTRAINT content_to_type FOREIGN KEY (content_type_id) REFERENCES content_type (content_type_id)
-);
-
 create table party_relationship
 (
     party_relationship_id uuid not null default uuid_generate_v1(),

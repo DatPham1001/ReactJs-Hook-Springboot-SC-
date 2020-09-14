@@ -4,6 +4,7 @@ import com.hust.baseweb.applications.order.constant.OrderStatus;
 import com.hust.baseweb.applications.order.constant.SortByOrderField;
 import com.hust.baseweb.applications.order.constant.SortDirection;
 import com.hust.baseweb.applications.order.model.createorder.CreateOrderIM;
+import com.hust.baseweb.applications.order.model.updateorder.UpdateOrderIM;
 import com.hust.baseweb.applications.order.service.OrderServiceImpl;
 import com.hust.baseweb.utils.Constant;
 import lombok.AllArgsConstructor;
@@ -58,9 +59,9 @@ public class OrderController {
                                            @Min(value = 0, message = "Số trang phải là số không âm") Integer pageNumber,
                                            @RequestParam(required = false) String search) {
 
-        if (search != null) return orderService.getOrdersList(pageSize, pageNumber, search);
-
-        search = "";
+        if (search == null) {
+            search = "";
+        }
 
         return orderService.getOrdersList(pageSize, pageNumber, search);
     }
@@ -102,5 +103,28 @@ public class OrderController {
         } else {
             return getOrdersList(pageSize, pageNumber, search);
         }
+    }
+
+    /*@DeleteMapping("/orders")
+    public ResponseEntity<?> deleteOrders(@RequestBody UpdateStatusOrDeleteOrdersIM im) {
+        if (im.getOrderIds() == null) {
+            return ResponseEntity.ok().body("Đã xoá");
+        } else {
+            return orderService.deleteOrders(im);
+        }
+    }
+
+    @PutMapping("/status")
+    public ResponseEntity<?> updateStatusOfOrders(@RequestBody UpdateStatusOrDeleteOrdersIM im) {
+        if (im.getOrderIds() == null) {
+            return ResponseEntity.ok().body("Đã cập nhật");
+        } else {
+            return orderService.updateStatusOrdersToCompleted(im);
+        }
+    }*/
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOrder(@PathVariable UUID id, @Valid @RequestBody UpdateOrderIM updateOrderIM) {
+        return orderService.updateOrder(id, updateOrderIM);
     }
 }

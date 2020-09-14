@@ -24,21 +24,23 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID productId;
+    private UUID id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    private String productCode;
+    private String code;
 
-    private String productName;
+    private String name;
 
     private long price;
 
-    private String linkImg;
+    private String uom;
 
-    private int warehouseQuantity;
+    private String imageLink;
+
+    private int inventoryNumber;
 
     private String description;
 

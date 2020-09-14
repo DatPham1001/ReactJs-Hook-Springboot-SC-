@@ -10,6 +10,7 @@ import {
   TextField,
   FormControl,
   InputLabel,
+  Snackbar,
 } from "@material-ui/core";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -19,6 +20,7 @@ import makeAnimated from "react-select/animated";
 import { useForm } from "react-hook-form";
 import SaveIcon from "@material-ui/icons/Save";
 import CancelIcon from "@material-ui/icons/Cancel";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,8 +59,28 @@ export default function SupplierCreate() {
   const [categories, setCategories] = useState([]);
   const [options, setOptions] = useState([]);
 
+    //notifi
+  
+    const [state, setState] = React.useState({
+      openMes: false,
+      vertical: "bottom",
+      horizontal: "right",
+    });
+  
+    const { vertical, horizontal, openMes } = state;
+    const [mesSaveSuccess, setMesSaveSuccess] = useState(false);
+    const [mesSystem, setMesSystem] = useState(false);
+    const [mesExistCode, setMesExitsCode] = useState(false);
+
+    const handleCloseMes = () => {
+        setState({ ...state, openMes: false });
+        setMesSaveSuccess(false);
+        setMesSystem(false);
+        setMesExitsCode(false);
+      };
+
   // Form.
-  const { register, handleSubmit, watch, errors, setError } = useForm({
+  const { register, handleSubmit, watch, errors, setError, reset  } = useForm({
     defaultValues: {
       supplierName: "",
       supplierCode: "",
@@ -68,57 +90,63 @@ export default function SupplierCreate() {
     },
   });
 
-  const getCategories = () => {
-    axiosGet(dispatch, token, "/category?page=0&limit=10").then((resp) => {
-      console.log(resp.data.content);
+//   const getCategories = () => {
+//     axiosGet(dispatch, token, "/category?page=0&limit=10").then((resp) => {
+//       console.log(resp.data.content);
 
-      let dataOption = resp.data.content.map((category) => {
-        let value = category.categoryId;
-        let label = category.categoryName;
-        return { value: value, label: label };
-        // setOptions([...options, {value: value, label: label}]);
-      });
-      setOptions(dataOption);
-    });
-  };
+//       let dataOption = resp.data.content.map((category) => {
+//         let value = category.categoryId;
+//         let label = category.categoryName;
+//         return { value: value, label: label };
+//         // setOptions([...options, {value: value, label: label}]);
+//       });
+//       setOptions(dataOption);
+//     });
+//   };
 
-  useEffect(() => {
-    getCategories();
-  }, []);
+//   useEffect(() => {
+//     getCategories();
+//   }, []);
 
-  // let categoriesId=[];
-  // categories.map(categoryName => {
-  //     listCategory.map(category=>{
-  //         if(category.categoryName === categoryName){
-  //             categoriesId.push(category.categoryId);
-  //         }
-  //     })
-  // })
 
   const onSubmit = (data) => {
     console.log(data);
 
     axiosPost(dispatch, token, `/supplier`, {
-      supplierName: data.supplierName,
-      supplierCode: data.supplierCode,
-      phoneNumber: data.phoneNumber,
-      email: data.phoneNumber,
-      address: data.address,
-      categoryIds: categories,
+      supplierName: data.supplierName.trim(),
+      supplierCode: data.supplierCode.trim(),
+      phoneNumber: data.phoneNumber.trim(),
+      email: data.email.trim(),
+      address: data.address.trim(),
     })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
 
-        history.push("/supplier/list");
+        setMesSaveSuccess(true);
+        setState({ ...state, openMes: true });
+
+        setTimeout(()=>{
+            history.push("/supplier/list");
+        }, 1000);
+        
       })
       .catch((e) => {
         let body = e.response.data;
-        console.log(body)
+        console.log("body",body);
         if (body.status === 400) {
-          setError(body.errors[0].location, {
-            type: body.errors[0].type,
-            message: body.errors[0].message,
-          });
+            let { errors } = body;
+            let location = [];
+            location = errors.map((err) => err.location);
+            if(location.indexOf("supplierCode") !== -1){
+                setState({...state, openMes: true});
+                setMesExitsCode(true);
+            }else {
+                setState({...state, openMes: true});
+                setMesSystem(true);
+            }
+        }else {
+            setState({...state, openMes: true});
+            setMesSystem(true);
         }
       });
   };
@@ -137,20 +165,30 @@ export default function SupplierCreate() {
                   id="supplierName"
                   name="supplierName"
                   label="Tên nhà cung cấp*"
+                  variant="outlined"
+                  size="small"
+                  
                   value={watch("supplierName")}
                   error={errors.supplierName ? true : null}
                   helperText={errors.supplierName?.message}
+                  inputRef={register({
+                    required: "Trường này được yêu cầu",
+                    maxLength: {
+                        value: 255,
+                        message: "Độ dài vượt quá kích thước cho phép"
+                    },
+                  })}
+
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  inputRef={register({
-                    required: "Trường này được yêu cầu",
-                  })}
                 />
                 <TextField
                   id="supplierCode"
                   name="supplierCode"
                   label="Mã nhà cung cấp*"
+                  variant="outlined"
+                  size="small"
                   value={watch("supplierCode")}
                   error={errors.supplierCode ? true : null}
                   helperText={errors.supplierCode?.message}
@@ -158,13 +196,18 @@ export default function SupplierCreate() {
                     shrink: true,
                   }}
                   inputRef={register({
-                    required: "Trường này được yêu cầu",
+                    maxLength: {
+                        value: 100,
+                        message: "Mã nhà cung cấp vượt quá độ dài cho phép"
+                    }
                   })}
                 />
                 <TextField
                   id="phoneNumber"
                   name="phoneNumber"
                   label="Số điện thoại*"
+                  variant="outlined"
+                  size="small"
                   value={watch("phoneNumber")}
                   error={errors.phoneNumber ? true : null}
                   helperText={errors.phoneNumber?.message}
@@ -183,6 +226,8 @@ export default function SupplierCreate() {
                   id="email"
                   name="email"
                   label="Email*"
+                  variant="outlined"
+                  size="small"
                   value={watch("email")}
                   error={errors.email ? true : null}
                   helperText={errors.email?.message}
@@ -201,6 +246,8 @@ export default function SupplierCreate() {
                   id="address"
                   name="address"
                   label="Địa chỉ*"
+                  variant="outlined"
+                  size="small"
                   value={watch("address")}
                   error={errors.address ? true : null}
                   helperText={errors.address?.message}
@@ -215,10 +262,7 @@ export default function SupplierCreate() {
                     },
                   })}
                 />
-                <FormControl className={classes.formControl}>
-                  {/* <InputLabel id="role-label">Danh mục</InputLabel> */}
-                  <br />
-                  <br />
+                {/* <FormControl className={classes.formControl}>
                   <Select
                     closeMenuOnSelect={false}
                     components={animatedComponents}
@@ -245,7 +289,7 @@ export default function SupplierCreate() {
                       }),
                     }}
                   />
-                </FormControl>
+                </FormControl> */}
               </div>
               <br />
               <br />
@@ -255,7 +299,7 @@ export default function SupplierCreate() {
                   <Button
                     color="secondary"
                     variant="outlined"
-                    type="reset"
+                    onClick={reset}
                     size="medium"
                     startIcon={<CancelIcon />}
                     style={{ marginRight: 20, marginLeft: 42 }}
@@ -277,6 +321,42 @@ export default function SupplierCreate() {
             </form>
           </CardContent>
         </Card>
+        {mesSaveSuccess && (
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={openMes}
+            onClose={handleCloseMes}
+            key={vertical + horizontal}
+          >
+            <Alert onClose={handleCloseMes} severity="success" variant="filled">
+              Tạo nhà cung cấp thành công !
+            </Alert>
+          </Snackbar>
+        )}
+        {mesExistCode && (
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={openMes}
+            onClose={handleCloseMes}
+            key={vertical + horizontal}
+          >
+            <Alert onClose={handleCloseMes} severity="error" variant="filled">
+              Mã nhà cung cấp đã tồn tại !
+            </Alert>
+          </Snackbar>
+        )}
+        {mesSystem && (
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={openMes}
+            onClose={handleCloseMes}
+            key={vertical + horizontal}
+          >
+            <Alert onClose={handleCloseMes} severity="error" variant="filled">
+              Lỗi hệ thống !
+            </Alert>
+          </Snackbar>
+        )}
       </MuiPickersUtilsProvider>
     </div>
   );

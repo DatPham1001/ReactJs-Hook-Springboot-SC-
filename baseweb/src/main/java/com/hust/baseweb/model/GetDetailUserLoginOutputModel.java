@@ -17,8 +17,8 @@ public class GetDetailUserLoginOutputModel {
     }
 
     public GetDetailUserLoginOutputModel(
-        String userName, String partyId,
-        SecurityGroupOutputModel[] allSecurityGroups
+            String userName, String partyId,
+            SecurityGroupOutputModel[] allSecurityGroups
     ) {
         super();
         this.userName = userName;

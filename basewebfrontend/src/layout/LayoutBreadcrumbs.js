@@ -38,9 +38,9 @@ export function LayoutBreadcrumbs(props) {
   } else return "";
   return (
     <Breadcrumbs aria-label="breadcrumb">
-      <Link color="inherit" href="/">
+      {/* <Link color="inherit" href="/">
         Trang chủ
-      </Link>
+      </Link> */}
       {/* {bc3}
       {bc2}
       {bc1} */}

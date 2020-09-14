@@ -19,15 +19,20 @@ import {
   Button,
   CircularProgress,
   Menu,
+  Tooltip,
+  IconButton,
+  Snackbar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DateFnsUtils from "@date-io/date-fns";
 import ChipInput from "material-ui-chip-input";
 import { Controller, useForm } from "react-hook-form";
 import Chip from "@material-ui/core/Chip";
-import { object, string, array } from "yup";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
+import SaveIcon from "@material-ui/icons/Save";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import Alert from "@material-ui/lab/Alert";
 
 const animatedComponents = makeAnimated();
 const useStyles = makeStyles((theme) => ({
@@ -75,13 +80,31 @@ function SupplierEdit(props) {
   const history = useHistory();
 
   //data of old supplier
-  const [data, setData] = useState({});
-  //data of new supplier
-  const [supplierName, setSupplierName] = useState();
-  const [phoneNumber, setPhoneNumber] = useState();
-  const [email, setEmail] = useState();
   const [categories, setCategories] = useState([]);
-  const [address, setAddress] = useState();
+
+  //form 
+  const { register, handleSubmit, watch, errors, setError, reset, setValue   } = useForm({
+    defaultValues: {
+      supplierName: "",
+      supplierCode: "",
+      phoneNumber: "",
+      email: "",
+      address: "",
+    },
+  });
+
+  //notifi
+  
+  const [state, setState] = React.useState({
+    openMes: false,
+    vertical: "bottom",
+    horizontal: "right",
+  });
+
+  const { vertical, horizontal, openMes } = state;
+  const [mesUpdateSuccess, setMesUpdateSuccess] = useState(false);
+  const [mesExistCode, setMesExitCode] = useState(false);
+  const [mesErrSystem, setMesErrSystem] = useState(false);
 
   const [listCategory, setListCategory] = useState([]);
   const [options, setOptions] = useState([]);
@@ -104,26 +127,23 @@ function SupplierEdit(props) {
 
   const [isRequesting, setIsRequesting] = useState(false);
 
-  const schema = object({
-    frequency: string().required("Trường này được yêu cầu"),
-    days: array().min(1, "Trường này được yêu cầu"),
-  });
-  const { control, errors } = useForm({
-    defaultValues: {
-      days: [],
-    },
-    validationSchema: schema,
-  });
+  const handleCloseMes = () => {
+    setState({ ...state, openMes: false });
+    setMesUpdateSuccess(false);
+    setMesExitCode(false);
+    setMesErrSystem(false);
+  };
+
 
   useEffect(() => {
     axiosGet(dispatch, token, `/supplier/${supplierId}`).then((resp) => {
       console.log(resp.data);
-      setData(resp.data);
       let { data } = resp;
-      setSupplierName(data.supplierName);
-      setPhoneNumber(data.phoneNumber);
-      setEmail(data.email);
-      setAddress(data.address);
+        setValue("supplierName",data.name);
+        setValue("supplierCode", data.code);
+        setValue("phoneNumber",data.phoneNumber);
+        setValue("email",data.email);
+        setValue("address",data.address);
     });
   }, []);
 
@@ -140,94 +160,157 @@ function SupplierEdit(props) {
     });
   }, []);
 
-  const handleSupplierName = (event) => {
-    setSupplierName(event.target.value);
-  };
+  const onSubmit = (data)=> {
+      console.log("data",data);
+      let body = {
+        supplierName: data.supplierName.trim(),
+        supplierCode: data.supplierCode.trim(),
+        phoneNumber: data.phoneNumber.trim(),
+        email: data.email.trim(),
+        address: data.address.trim(),
+      };
+      console.log(data);
+      axiosPut(dispatch, token, `/supplier/${supplierId}`, body).then((resp) => {
+          setState({...state, openMes: true});
+          setMesUpdateSuccess(true);
 
-  const handlePhoneNumber = (event) => {
-    setPhoneNumber(event.target.value);
-  };
-  const handleEmail = (event) => {
-    setEmail(event.target.value);
-  };
-  const handleAddress = (event) => {
-    setAddress(event.target.value);
-  };
-  const handleCategory = (event) => {
-    setCategories(event.target.value);
-    console.log(event.target);
-  };
-
-  const onAdd = (chip) => {
-    setCategories([...categories, chip]);
-  };
-  const onDelete = (chip, index) => {
-    setCategories(
-      categories.slice(0, index).concat(categories.slice(index + 1))
-    );
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    let data = {
-      supplierName,
-      phoneNumber,
-      email,
-      address,
-      categoryIds: categories,
-    };
-    console.log(data);
-    axiosPut(dispatch, token, `/supplier/${supplierId}`, data).then((resp) => {
-      history.push(`/supplier/detail/${supplierId}`);
-    });
-  };
-  // console.log(defaultValue)
+          setTimeout(()=>{
+                history.push(`/supplier/detail/${supplierId}`);
+          }, 1000);
+        
+      }).catch(e=>{
+        let body = e.response.data;
+        console.log("body",body);
+        if (body.status === 400) {
+            let { errors } = body;
+            let location = [];
+            location = errors.map((err) => err.location);
+            if(location.indexOf("supplierCode") !== -1){
+                setState({...state, openMes: true});
+                setMesExitCode(true);
+            }else {
+                setState({...state, openMes: true});
+                setMesErrSystem(true);
+            }
+        }else {
+            setState({...state, openMes: true});
+            setMesErrSystem(true);
+        }
+      });
+  }
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Tooltip title="Trở lại" arrow={true}>
+        <IconButton
+          onClick={() => history.goBack()}
+          className="icons"
+          aria-label="Xóa"
+        >
+          <ArrowBackIcon></ArrowBackIcon>
+        </IconButton>
+      </Tooltip>
+        <br/><br/>
       <Card>
         <CardContent>
           <Typography variant="h5" component="h2" align="left">
-            Edit Supplier
+            Chỉnh sửa chi tiết nhà cung cấp
           </Typography>
-          <form className={classes.root} noValidate autoComplete="off">
+          <form className={classes.root} autoComplete="off"  onSubmit={handleSubmit(onSubmit)}>
             <div>
               <TextField
                 id="supplierName"
                 label="Tên nhà cung cấp"
-                value={supplierName}
-                onChange={handleSupplierName}
+                variant="outlined"
+                size="small"
                 InputLabelProps={{
                   shrink: true,
                 }}
+
+                name="supplierName"
+                value={watch("supplierName")}
+                error={errors.supplierName ? true : null}
+                helperText={errors.supplierName?.message}
+                inputRef={register({
+                    required: "Bạn chưa điền tên."
+                })}
+              />
+              <TextField
+                id="supplierCode"
+                label="Mã nhà cung cấp"
+                variant="outlined"
+                size="small"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+
+                name="supplierCode"
+                value={watch("supplierCode")}
+                error={errors.supplierCode ? true : null}
+                helperText={errors.supplierCode?.message}
+                inputRef={register({
+                    required: "Bạn chưa điền mã code."
+                })}
               />
               <TextField
                 id="firstName"
                 label="Số điện thoại"
-                value={phoneNumber}
-                onChange={handlePhoneNumber}
+                variant="outlined"
+                size="small"
                 InputLabelProps={{
                   shrink: true,
                 }}
+
+                name="phoneNumber"
+                value={watch("phoneNumber")}
+                error={errors.phoneNumber ? true : null}
+                helperText={errors.phoneNumber?.message}
+                inputRef={register({
+                    required: "Bạn chưa điền số điện thoại.",
+                    pattern: {
+                        value: /((09|03|07|08|05)+([0-9]{8,9})\b)/g,
+                        message: "Số điện thoại không hợp lệ",
+                      },
+                })}
               />
               <TextField
                 id="middleName"
                 label="Email"
-                value={email}
-                onChange={handleEmail}
+                variant="outlined"
+                size="small"
                 InputLabelProps={{
                   shrink: true,
                 }}
+
+                name="email"
+                value={watch("email")}
+                error={errors.email ? true : null}
+                helperText={errors.email?.message}
+                inputRef={register({
+                    required: "Bạn chưa điền email.",
+                    pattern: {
+                        value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                        message: "Email không hợp lệ",
+                      },
+                })}
               />
               <TextField
                 id="lastName"
                 label="Địa chỉ"
-                value={address}
-                onChange={handleAddress}
+                variant="outlined"
+                size="small"
                 InputLabelProps={{
                   shrink: true,
                 }}
+
+                name="address"
+                value={watch("address")}
+                error={errors.address ? true : null}
+                helperText={errors.address?.message}
+                inputRef={register({
+                    required: "Bạn chưa điền địa chỉ."
+                })}
               />
-              <FormControl className={classes.formControl}>
+              {/* <FormControl className={classes.formControl}>
                 <InputLabel id="role-label">Danh mục</InputLabel>
 
                 <Select
@@ -258,20 +341,65 @@ function SupplierEdit(props) {
                     }),
                   }}
                 />
-              </FormControl>
+              </FormControl> */}
+            </div>
+            <div className="row">
+                <div className="col-9"></div>
+                <div className="col-3">
+                    <Button
+                        disabled={isRequesting}
+                        variant="contained"
+                        color="primary"
+                        // onClick={handleSubmit}
+                        style={{minWidth: 200}}
+                        startIcon={<SaveIcon />}
+                        type="submit"
+                    >
+                        {isRequesting ? <CircularProgress /> : "Lưu"}
+                    </Button>
+                </div>
             </div>
           </form>
+          
         </CardContent>
-        <CardActions>
-          <Button
-            disabled={isRequesting}
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
+        <div>
+        {mesUpdateSuccess && (
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={openMes}
+            onClose={handleCloseMes}
+            key={vertical + horizontal}
           >
-            {isRequesting ? <CircularProgress /> : "Save"}
-          </Button>
-        </CardActions>
+            <Alert onClose={handleCloseMes} severity="success" variant="filled">
+              Cập nhật nhà cung cấp thành công !
+            </Alert>
+          </Snackbar>
+        )}
+        {mesExistCode && (
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={openMes}
+            onClose={handleCloseMes}
+            key={vertical + horizontal}
+          >
+            <Alert onClose={handleCloseMes} severity="error" variant="filled">
+              Mã nhà cung cấp đã tồn tại !
+            </Alert>
+          </Snackbar>
+        )}
+        {mesErrSystem && (
+          <Snackbar
+            anchorOrigin={{ vertical, horizontal }}
+            open={openMes}
+            onClose={handleCloseMes}
+            key={vertical + horizontal}
+          >
+            <Alert onClose={handleCloseMes} severity="error" variant="filled">
+              Lỗi hệ thống !
+            </Alert>
+          </Snackbar>
+        )}
+        </div>
       </Card>
     </MuiPickersUtilsProvider>
   );

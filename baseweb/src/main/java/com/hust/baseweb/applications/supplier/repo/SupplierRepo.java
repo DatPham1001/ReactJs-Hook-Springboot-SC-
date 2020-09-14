@@ -14,16 +14,32 @@ import java.util.UUID;
 
 @Repository
 public interface SupplierRepo extends JpaRepository<Supplier, UUID> {
-    @Query(value = "select cast(supplier_id as varchar) supplierId,supplier_code supplierCode ,supplier_name supplierName, phone_number phoneNumber,email, address " +
-            "from supplier s where is_deleted = false and (upper(supplier_code) like upper(concat('%', ?1, '%')) or upper(supplier_name) like upper(concat('%', ?1, '%')) or upper(email) like upper(concat('%', ?1, '%')) or upper(phone_number) like upper(concat('%', ?1, '%')) or upper(address) like upper(concat('%', ?1, '%')))",
-            countQuery = "select count(*) from supplier s where is_deleted = false and (upper(supplier_code) like upper(concat('%', ?1, '%')) or upper(supplier_name) like upper(concat('%', ?1, '%')) or upper(email) like upper(concat('%', ?1, '%')) or upper(phone_number) like upper(concat('%', ?1, '%')) or upper(address) like upper(concat('%', ?1, '%'))) ",
+    @Query(value = "select cast(id as varchar) supplierId,\n" +
+                    "\tcode supplierCode,\n" +
+                    "\tname supplierName, \n" +
+                    "\tphone_number phoneNumber,\n" +
+                    "\temail, \n" +
+                    "\taddress \n" +
+                    "from supplier s where is_deleted = false \n" +
+                    "\tand (upper(code) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(name) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(email) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(phone_number) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(address) like upper(concat('%', ?1, '%')))",
+            countQuery = "select count(id)\n" +
+                    "from supplier s where is_deleted = false \n" +
+                    "\tand (upper(code) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(name) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(email) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(phone_number) like upper(concat('%', ?1, '%')) \n" +
+                    "\tor upper(address) like upper(concat('%', ?1, '%')))",
             nativeQuery = true)
     Page<ListSupplierOM> getListSupplier(String search, Pageable pageable);
 
     /*@Query(value = "from Supplier s where s.deleted = false and s.supplierId = ?1")*/
-    Supplier findBySupplierIdAndDeletedFalse(UUID id);
+    Supplier findByIdAndDeletedFalse(UUID id);
 
-    Supplier findBySupplierCodeAndDeletedFalse(String supplierCode);
+    Supplier findByCodeAndDeletedFalse(String supplierCode);
 
     /*@Query(value = "update Supplier s set s.deleted = true where s.supplierId = ?1")*/
     @Transactional
@@ -35,4 +51,7 @@ public interface SupplierRepo extends JpaRepository<Supplier, UUID> {
     @Transactional
     @Query(value = "delete from supplier_category where supplier_id = ?1", nativeQuery = true)
     void deleteSupplierCategory(UUID id);
+
+    @Query(value = "select count(1) from supplier s2 where id = ?1 and is_deleted = false", nativeQuery = true)
+    int checkSupplierExistAndDeletedFalse(UUID id);
 }

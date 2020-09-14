@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Component
@@ -14,6 +13,8 @@ public class ProductUpdateIM {
     private UUID categoryId;
     private UUID supplierId;
     private String productName;
+    private String uom;
+    private String productCode;
     private long price;
     private int warehouseQuantity;
     private String linkImg;

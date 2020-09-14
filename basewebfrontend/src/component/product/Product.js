@@ -4,71 +4,82 @@ import { useHistory } from "react-router-dom";
 import { axiosGet } from '../../Api'
 import "./Product.css";
 import { makeStyles } from '@material-ui/core/styles';
-import { currencyFormat } from "utils/NumberFormat";
+import { currencyFormat, numberDecimalFormat } from "utils/NumberFormat";
 import MaterialTable from "material-table";
+import { Button, Box } from "@material-ui/core";
 
 
-const useStyles = makeStyles({
-    table: {
-        minWidth: 650,
-    },
-});
+// const useStyles = makeStyles({
+//     table: {
+//         minWidth: 650,
+//     },
+// });
 function Product() {
     const dispatch = useDispatch();
     const token = useSelector(state => state.auth.token);
     const history = useHistory();
 
     const [productNameInput, setProductNameInput] = useState("");
-    async function getProductList() {
-        let productList = axiosGet(dispatch, token, '/product?name=' + productNameInput + '&page=0&limit=').then(res => {
-            // setProductList(res.data);
-            // setProductContent(res.data.content);
-        }).catch(e => console.log("Error in getProductList", e))
-        // setProductList(productList);
-    }
-    useEffect(() => {
-        getProductList();
-    }, []);
-    // function handleDelete(e) {
-    //     console.log(e);
+    // async function getProductList() {
+    //     let productList = axiosGet(dispatch, token, '/product?name=' + productNameInput + '&page=0&limit=').then(res => {
+    //         // setProductList(res.data);
+    //         // setProductContent(res.data.content);
+    //     }).catch(e => console.log("Error in getProductList", e))
+    //     // setProductList(productList);
     // }
+    // useEffect(() => {
+    //     getProductList();
+    // }, []);
     function getProductDetail(e) {
         history.push("/products/detail/" + e);
     }
     return (
         <div className="container">
             <div className="table-container">
-                <div className="add-container">
-                    <button
-                        type="button"
-                        className="btn btn-primary"
+                <Box display='flex' justifyContent='flex-end'>
+                    <Button
+                        className="product-btn"
+                        variant="contained"
+                        color="primary"
                         onClick={() => history.push("/products/create")}>
                         Thêm mới
-                     </button>
-                     <button
-                        type="button"
-                        className="btn btn-primary"
+                </Button>
+                    <Button
+                        className="product-btn"
+                        variant="contained"
+                        color="primary"
                         onClick={() => history.push("/category/")}>
                         Quản lý danh mục
-                     </button>
-                </div>
+                </Button>
+                </Box>
                 <MaterialTable
                     title="Danh sách sản phẩm"
+
                     columns={[
+                        // {
+                        //     title: 'STT', field: "stt", width: '6%',
+                        //     headerStyle: {
+                        //         textAlign: 'center',
+                        //         paddingLeft: 40,
+                        //     },
+                        //     cellStyle: {
+                        //         textAlign: 'center'
+                        //     },
+                        // },
                         {
-                            title: 'STT', field: "stt", width: 30,
+                            title: 'Mã sản phẩm', field: 'productCode',
+                            width: '17%', 
                             headerStyle: {
-                                textAlign: 'center',
-                                paddingLeft: 40,
+                                paddingLeft: 20,
                             },
                             cellStyle: {
-                                textAlign: 'center'
+                                paddingLeft:22,
                             },
                         },
                         {
                             title: 'Ảnh sản phẩm',
                             field: 'linkImg',
-                            width: '15%',
+                            width: '17%',
                             cellStyle: {
                                 paddingLeft: 30,
                             },
@@ -81,28 +92,44 @@ function Product() {
                         },
                         {
                             title: 'Tên sản phẩm', field: 'productName',
-                            width: '15%',
-                        },
-                        {
-                            title: 'Mã sản phẩm', field: 'productCode',
-                            width: '15%', textAlign: 'center',
+                            width: '18%',
                         },
                         {
                             title: 'Loại', field: 'categoryName',
+                            // width: '10%',
+                        },
+                        {
+                            title: 'Đơn vị', field: 'uom',
                             width: '10%',
                         },
                         {
                             title: 'Giá nhập', field: 'price',
-                            width: '12%',
+                            // width: '12%',
                         },
-                        { title: 'Tồn kho', field: 'warehouseQuantity', width: '12%' },
                         {
-                            title: '', field: 'id', width: '12%',
-                            headerStyle: { textAlign: 'right' },
-                            cellStyle: { textAlign: 'right' }
-                        }
+                            title: 'Tồn kho', field: 'warehouseQuantity',
+                            // width: '15%'
+                        },
 
                     ]}
+                    localization={{
+                        body: {
+                            emptyDataSourceMessage: "Không bản ghi để hiển thị.",
+                        },
+                        toolbar: {
+                            searchPlaceholder: "Tìm kiếm",
+                            searchTooltip: "Tìm kiếm",
+                        },
+                        pagination: {
+                            hover: "pointer",
+                            labelRowsSelect: "hàng",
+                            labelDisplayedRows: "{from}-{to} của {count}",
+                            nextTooltip: "Trang tiếp",
+                            lastTooltip: "Trang cuối",
+                            firstTooltip: "Trang đầu",
+                            previousTooltip: "Trang trước",
+                        },
+                    }}
                     data={query =>
                         new Promise((resolve, reject) => {
                             axiosGet(dispatch,
@@ -112,12 +139,15 @@ function Product() {
                                 '&page=' + query.page +
                                 '&limit=' + query.pageSize)
                                 .then(result => {
+                                    console.log(result.data.content)
                                     let data = result.data.content;
                                     //format price
                                     let datas = data.map((item, index) => {
                                         let tmp = Object.assign({}, item,
                                             { price: currencyFormat(item.price) },
-                                            { stt: ((result.data.number) * result.data.size + index + 1) });
+                                            { stt: ((result.data.number) * result.data.size + index + 1) },
+                                            { warehouseQuantity: numberDecimalFormat(item.warehouseQuantity) },
+                                        );
                                         return tmp;
                                     })
                                     resolve({
@@ -128,8 +158,10 @@ function Product() {
                                 })
                         })
                     }
-                    onRowClick={((e, rowData) => getProductDetail(rowData.productId))}
+
+                    onRowClick={((e, rowData) => history.push("/products/detail/" + rowData.productId))}
                     options={{
+                        debounceInterval: 500,
                         // selection: true,
                         headerStyle: { backgroundColor: '#a5c3f2' },
                         cellStyle: {},
@@ -137,14 +169,6 @@ function Product() {
                             textAlign: 'left',
                         },
                     }}
-                // onSelectionChange={(evt, rowData) => getProductDetail(rowData.productId)}
-                // actions={[
-                //     {
-                //         tooltip: 'Remove All Selected Users',
-                //         icon: 'delete',
-                //         onClick: (evt, data) => alert('You want to delete ' +  + ' rows')
-                //     }
-                // ]}
                 />
             </div>
         </div>

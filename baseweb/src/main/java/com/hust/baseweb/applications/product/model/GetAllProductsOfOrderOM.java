@@ -20,4 +20,6 @@ public class GetAllProductsOfOrderOM {
     private Long price;
 
     private Integer quantity;
+
+    private String uom;
 }

@@ -98,7 +98,7 @@ export default function ChangePassword() {
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h4">
-          Change Password
+          Đổi mật khẩu
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -109,7 +109,7 @@ export default function ChangePassword() {
                 variant="outlined"
               >
                 <InputLabel htmlFor="current-password">
-                  Current Password
+                  Mật khẩu hiện tại
                 </InputLabel>
                 <OutlinedInput
                   id="current-password"
@@ -130,15 +130,13 @@ export default function ChangePassword() {
                   labelWidth={150}
                 />
                 <FormHelperText id="confirm-help-text">
-                  {currentPasswordFailed
-                    ? "Current password isn't correct"
-                    : ""}
+                  {currentPasswordFailed ? "Mật khẩu hiện tại không đúng" : ""}
                 </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth variant="outlined">
-                <InputLabel htmlFor="new-password">New Password</InputLabel>
+                <InputLabel htmlFor="new-password">Mật khẩu mới</InputLabel>
                 <OutlinedInput
                   id="new-password"
                   type={showPassword ? "text" : "password"}
@@ -166,7 +164,7 @@ export default function ChangePassword() {
                 variant="outlined"
               >
                 <InputLabel error={!passwordChecked} htmlFor="confirm-password">
-                  Confirm Password
+                  Xác nhận mật khẩu mới
                 </InputLabel>
                 <OutlinedInput
                   id="confirm-password"
@@ -190,7 +188,7 @@ export default function ChangePassword() {
                   labelWidth={150}
                 />
                 <FormHelperText id="confirm-help-text">
-                  {!passwordChecked ? "Confirm password isn't correct" : ""}
+                  {!passwordChecked ? "Xác nhận mật khẩu không đúng" : ""}
                 </FormHelperText>
               </FormControl>
             </Grid>
@@ -205,7 +203,7 @@ export default function ChangePassword() {
               className={classes.submit}
               onClick={handleSubmit}
             >
-              <CircularProgress /> Change
+              <CircularProgress /> Xác nhận
             </Button>
           ) : (
             <Button
@@ -217,7 +215,7 @@ export default function ChangePassword() {
               className={classes.submit}
               onClick={handleSubmit}
             >
-              Change
+              Xác nhận
             </Button>
           )}
         </form>

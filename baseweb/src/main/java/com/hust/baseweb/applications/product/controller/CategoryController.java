@@ -2,13 +2,11 @@ package com.hust.baseweb.applications.product.controller;
 
 import com.hust.baseweb.applications.product.entity.Category;
 import com.hust.baseweb.applications.product.model.CategoryIM;
-import com.hust.baseweb.applications.product.model.CreateCategoryIM;
 import com.hust.baseweb.applications.product.model.GetCategoriesByNameOM;
 import com.hust.baseweb.applications.product.service.CategoryServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.mediatype.hal.HalConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -43,14 +41,18 @@ public class CategoryController {
         Category category = categoryService.updateCategory(uuid, categoryIM);
         return ResponseEntity.ok().body(category);
     }
+
     @GetMapping("/{uuid}")
     public ResponseEntity<?> getCategoryById(@PathVariable UUID uuid) {
         Optional<CategoryIM> categoryIM = categoryService.getCategoryById(uuid);
         return ResponseEntity.ok().body(categoryIM);
     }
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<?> deleteCategory(@PathVariable UUID uuid){
-        categoryService.deleteCategory(uuid);
+
+    @DeleteMapping()
+    public ResponseEntity<?> deleteCategory(@RequestParam UUID uuid,
+                                            @RequestParam Boolean clear) {
+        categoryService.deleteCategory(uuid, clear);
         return ResponseEntity.ok().body(HttpStatus.OK);
+//        return ResponseEntity.ok(clearAllProduct);
     }
 }

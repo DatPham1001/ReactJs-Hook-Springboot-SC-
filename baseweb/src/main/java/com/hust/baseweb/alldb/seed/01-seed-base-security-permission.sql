@@ -60,8 +60,6 @@ insert into status_type (status_type_id, parent_type_id, description, last_updat
 values ('MARRY_STATUS', null, 'Marry status', null, NOW());
 insert into status_type (status_type_id, description , last_updated_stamp , created_stamp  )
 values ('PAYMENT_STATUS', 'Payment status', null, NOW());
-INSERT INTO public.status_type(status_type_id, parent_type_id, description, last_updated_stamp, created_stamp)
-VALUES('ORDER_STATUS', NULL, 'order status', NULL, NOW());
 
 
 
@@ -75,14 +73,6 @@ insert into status (status_id, status_type_id, status_code, sequence_id, descrip
 values ('PARTY_ENABLED', 'PARTY_STATUS', 'ENABLED', 0, 'Đã kích hoạt', null, NOW());
 insert into status (status_id, status_type_id, status_code, sequence_id, description, last_updated_stamp, created_stamp)
 values ('PARTY_DISABLED', 'PARTY_STATUS', 'DISABLED', 0, 'Đã bị vô hiệu hóa', null, NOW());
-INSERT INTO public.status(status_id, status_type_id, status_code, sequence_id, description, last_updated_stamp, created_stamp)
-VALUES('COMPLETE', 'ORDER_STATUS', 'COMPLETE', '0', 'Hoàn thành', null, NOW());
-INSERT INTO public.status(status_id, status_type_id, status_code, sequence_id, description, last_updated_stamp, created_stamp)
-VALUES('IMPORTED', 'ORDER_STATUS', 'IMPORTED', '0', 'Đã nhập kho', null, NOW());
-INSERT INTO public.status(status_id, status_type_id, status_code, sequence_id, description, last_updated_stamp, created_stamp)
-VALUES('ORDERED', 'ORDER_STATUS', 'ORDERED', '0', 'Đã đặt đơn', null, NOW());
-
-
 
 
 
@@ -92,114 +82,43 @@ insert into public.security_group(group_id, description) VALUES ('ROLE_WAREHOUSE
 insert into public.security_group(group_id, description) VALUES ('ROLE_WAREHOUSE_MANAGER', 'Thủ kho');
 
 
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('USER_CREATE', 'Create user permission', '2019-12-26 08:00:31.803', '2019-12-26 08:00:31.803');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('USER_VIEW', 'View user permission', '2019-12-26 08:00:31.803', '2019-12-26 08:00:31.803');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('ORDER_CREATE', 'Create order permission', '2019-12-26 08:00:31.803', '2019-12-26 08:00:31.803');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('ORDER_VIEW', 'View order permission', '2019-12-26 08:00:31.803', '2019-12-26 08:00:31.803');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('INVOICE_CREATE', 'Create order permission', '2019-12-26 08:00:31.803', '2019-12-26 08:00:31.803');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('INVOICE_VIEW', 'View order permission', '2019-12-26 08:00:31.803', '2019-12-26 08:00:31.803');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('DELIVERY_PLAN_CREATE', 'Creation of delivery plan and trips', NULL, '2020-03-01 18:39:22.008');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('SALES_ROUTE_PLAN_CREATE', 'Creation of Sales Route', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('GEO_ADDRESS_ADMIN', 'Creation of Sales Route', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('SALES_ADMIN_VIEW_REPORT', 'Administrator of sales', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('FACILITY_ADMIN_VIEW_REPORT', 'Administrator of facility', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('TMS_ADMIN_VIEW_REPORT', 'Administrator of facility', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('TMS_CONTAINER_ADMIN', 'Administrator of container transportation', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_permission
-    (permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('SALES_ADMIN', 'Administrator of sales', NULL, '2020-03-01 18:54:50.488');
+
+INSERT INTO public.security_permission (permission_id,description,last_updated_stamp,created_stamp) VALUES
+('USER_CREATE','Create user permission','2019-12-26 08:00:31.803','2019-12-26 08:00:31.803')
+,('USER_VIEW','View user permission','2019-12-26 08:00:31.803','2019-12-26 08:00:31.803')
+,('ORDER_CREATE','Create order permission','2019-12-26 08:00:31.803','2019-12-26 08:00:31.803')
+,('ORDER_VIEW','View order permission','2019-12-26 08:00:31.803','2019-12-26 08:00:31.803')
+,('PRODUCT_CREATE','Create product permission','2020-08-30 11:00:06.088','2020-08-30 11:00:06.088')
+,('PRODUCT_VIEW','View product permission','2020-08-30 11:00:08.687','2020-08-30 11:00:08.687')
+,('SUPPLIER_CREATE','Create supplier permission','2020-08-30 11:04:51.629','2020-08-30 11:04:51.629')
+,('SUPPLIER_VIEW','View supplier permission','2020-08-30 11:04:54.002','2020-08-30 11:04:54.002')
+;
 
 
+INSERT INTO public.security_group_permission (group_id,permission_id,last_updated_stamp,created_stamp) VALUES
+('ROLE_ADMIN','ORDER_CREATE','2020-08-30 11:33:09.121','2020-08-30 11:33:09.121')
+,('ROLE_ADMIN','ORDER_VIEW','2020-08-30 12:15:28.367','2020-08-30 12:15:28.367')
+,('ROLE_ADMIN','USER_CREATE','2020-08-30 12:24:33.957','2020-08-30 12:24:33.957')
+,('ROLE_ADMIN','USER_VIEW','2020-08-30 12:24:56.865','2020-08-30 12:24:56.865')
+,('ROLE_ADMIN','PRODUCT_CREATE','2020-08-30 12:25:30.894','2020-08-30 12:25:30.894')
+,('ROLE_ADMIN','PRODUCT_VIEW','2020-08-30 12:25:38.888','2020-08-30 12:25:38.888')
+,('ROLE_ADMIN','SUPPLIER_CREATE','2020-08-30 12:26:05.701','2020-08-30 12:26:05.701')
+,('ROLE_ADMIN','SUPPLIER_VIEW','2020-08-30 12:26:16.830','2020-08-30 12:26:16.830')
+,('ROLE_WAREHOUSE_MANAGER','SUPPLIER_CREATE','2020-08-30 21:58:52.128','2020-08-30 21:58:52.128')
+,('ROLE_WAREHOUSE_MANAGER','SUPPLIER_VIEW','2020-08-30 21:59:00.693','2020-08-30 21:59:00.693')
+;
+INSERT INTO public.security_group_permission (group_id,permission_id,last_updated_stamp,created_stamp) VALUES
+('ROLE_COORDINATOR','ORDER_VIEW','2020-08-30 21:59:32.004','2020-08-30 21:59:32.004')
+,('ROLE_COORDINATOR','ORDER_CREATE','2020-08-30 21:59:43.678','2020-08-30 21:59:43.678')
+,('ROLE_WAREHOUSE_STAFF','PRODUCT_CREATE','2020-08-30 22:00:05.934','2020-08-30 22:00:05.934')
+,('ROLE_WAREHOUSE_STAFF','PRODUCT_VIEW','2020-08-30 22:00:13.112','2020-08-30 22:00:13.112')
+,('ROLE_WAREHOUSE_MANAGER','PRODUCT_VIEW','2020-08-30 22:01:28.698','2020-08-30 22:01:28.698')
+,('ROLE_WAREHOUSE_MANAGER','PRODUCT_CREATE','2020-08-30 22:01:36.267','2020-08-30 22:01:36.267')
+,('ROLE_WAREHOUSE_MANAGER','ORDER_CREATE','2020-08-30 22:02:08.704','2020-08-30 22:02:08.704')
+,('ROLE_WAREHOUSE_MANAGER','ORDER_VIEW','2020-08-30 22:02:13.761','2020-08-30 22:02:13.761')
+;
 
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'ORDER_VIEW', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'ORDER_CREATE', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'USER_CREATE', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'USER_VIEW', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'INVOICE_CREATE', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'INVOICE_VIEW', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_SALE_MANAGER', 'ORDER_CREATE', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_SALE_MANAGER', 'ORDER_VIEW', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_ACCOUNTANT', 'ORDER_VIEW', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_ACCOUNTANT', 'INVOICE_CREATE', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_ACCOUNTANT', 'INVOICE_VIEW', '2019-12-26 08:00:35.749', '2019-12-26 08:00:35.749');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_TMS_MANAGER', 'DELIVERY_PLAN_CREATE', NULL, '2020-03-01 18:39:24.741');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'DELIVERY_PLAN_CREATE', NULL, '2020-03-01 18:49:58.969');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_SALES_ROUTE_MANAGER', 'SALES_ROUTE_PLAN_CREATE', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'SALES_ROUTE_PLAN_CREATE', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'GEO_ADDRESS_ADMIN', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'SALES_ADMIN_VIEW_REPORT', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'FACILITY_ADMIN_VIEW_REPORT', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'TMS_ADMIN_VIEW_REPORT', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_FULL_ADMIN', 'TMS_CONTAINER_ADMIN', NULL, '2020-03-01 18:54:50.488');
-insert into public.security_group_permission
-    (group_id, permission_id, last_updated_stamp, created_stamp)
-VALUES ('ROLE_TMS_CONTAINER_ADMIN', 'TMS_CONTAINER_ADMIN', NULL, '2020-03-01 18:54:50.488');
+
 
 insert into application_type(application_type_id, description, last_updated_stamp, created_stamp)
 values ('MENU', 'Menu application type', NOW(), NOW());
@@ -212,73 +131,24 @@ values ('SERVICE', 'Service application type', NOW(), NOW());
 insert into application_type(application_type_id, description, last_updated_stamp, created_stamp)
 values ('ENTITY', 'Entity application type', NOW(), NOW());
 
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_USER', 'MENU', NULL, NULL, 'Menu user management', '2019-12-26 08:00:39.953', '2019-12-26 08:00:39.953');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_USER_CREATE', 'MENU', 'MENU_USER', 'USER_CREATE', 'Menu user create', '2019-12-26 08:00:39.953',
-        '2019-12-26 08:00:39.953');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_USER_LIST', 'MENU', 'MENU_USER', 'USER_VIEW', 'Menu user list', '2019-12-26 08:00:39.953',
-        '2019-12-26 08:00:39.953');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_ORDER', 'MENU', NULL, NULL, 'Menu order management', '2019-12-26 08:00:39.953',
-        '2019-12-26 08:00:39.953');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_ORDER_LIST', 'MENU', 'MENU_ORDER', 'ORDER_VIEW', 'Menu order list', '2019-12-26 08:00:39.953',
-        '2019-12-26 08:00:39.953');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_ORDER_CREATE', 'MENU', 'MENU_ORDER', 'ORDER_CREATE', 'Menu order create', '2019-12-26 08:00:39.953',
-        '2019-12-26 08:00:39.953');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT', 'MENU', NULL, 'SALES_ADMIN_VIEW_REPORT', 'Menu sales report', NULL,
-        '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_CHART', 'MENU', 'MENU_SALES_REPORT', 'SALES_ADMIN_VIEW_REPORT', 'Chart report', NULL,
-        '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_TABLE', 'MENU', 'MENU_SALES_REPORT', 'SALES_ADMIN_VIEW_REPORT', 'Table report', NULL,
-        '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_CUSTOMER', 'MENU', 'MENU_SALES_REPORT', 'SALES_ADMIN_VIEW_REPORT', 'Customer based Revenue',
-        NULL, '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_SALESMAN', 'MENU', 'MENU_SALES_REPORT', 'SALES_ADMIN_VIEW_REPORT', 'Salesman based Revenue',
-        NULL, '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_DISTRIBUTOR', 'MENU', 'MENU_SALES_REPORT', 'SALES_ADMIN_VIEW_REPORT',
-        'Distributor based Revenue', NULL, '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_PRODUCT', 'MENU', 'MENU_SALES_REPORT', 'SALES_ADMIN_VIEW_REPORT', 'Product based Revenue',
-        NULL, '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_FACILITY_REPORT', 'MENU', NULL, 'FACILITY_ADMIN_VIEW_REPORT', 'Menu sales report', NULL,
-        '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_FACILITY_REPORT_INVENTORY_ITEM_ON_HAND', 'MENU', 'MENU_FACILITY_REPORT', 'FACILITY_ADMIN_VIEW_REPORT',
-        'Ton kho', NULL, '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_IMPORT', 'MENU', 'MENU_FACILITY_REPORT', 'FACILITY_ADMIN_VIEW_REPORT', 'Nhap kho', NULL,
-        '2020-03-01 18:54:50.488');
-insert into public.application
-(application_id, application_type_id, module_id, permission_id, description, last_updated_stamp, created_stamp)
-VALUES ('MENU_SALES_REPORT_EXPORT', 'MENU', 'MENU_FACILITY_REPORT', 'FACILITY_ADMIN_VIEW_REPORT', 'Xuat kho', NULL,
-        '2020-03-01 18:54:50.488');
+
+
+INSERT INTO public.application (application_id,application_type_id,module_id,permission_id,description,last_updated_stamp,created_stamp) VALUES
+('MENU_USER','MENU',NULL,NULL,'Menu user management','2019-12-26 08:00:39.953','2019-12-26 08:00:39.953')
+,('MENU_USER_CREATE','MENU','MENU_USER','USER_CREATE','Menu user create','2019-12-26 08:00:39.953','2019-12-26 08:00:39.953')
+,('MENU_USER_LIST','MENU','MENU_USER','USER_VIEW','Menu user list','2019-12-26 08:00:39.953','2019-12-26 08:00:39.953')
+,('MENU_ORDER','MENU',NULL,NULL,'Menu order management','2019-12-26 08:00:39.953','2019-12-26 08:00:39.953')
+,('MENU_ORDER_LIST','MENU','MENU_ORDER','ORDER_VIEW','Menu order list','2019-12-26 08:00:39.953','2019-12-26 08:00:39.953')
+,('MENU_ORDER_CREATE','MENU','MENU_ORDER','ORDER_CREATE','Menu order create','2019-12-26 08:00:39.953','2019-12-26 08:00:39.953')
+,('MENU_PRODUCT','MENU',NULL,NULL,'Menu product management','2020-08-30 10:55:47.969','2020-08-30 10:55:47.969')
+,('MENU_PRODUCT_CREATE','MENU','MENU_PRODUCT','PRODUCT_CREATE','Menu product create','2020-08-30 11:00:11.813','2020-08-30 11:00:11.813')
+,('MENU_PRODUCT_LIST','MENU','MENU_PRODUCT','PRODUCT_VIEW','Menu product list','2020-08-30 11:00:14.385','2020-08-30 11:00:14.385')
+,('MENU_SUPPLIER','MENU',NULL,NULL,'Menu supplier management','2020-08-30 11:06:15.300','2020-08-30 11:06:15.300')
+;
+INSERT INTO public.application (application_id,application_type_id,module_id,permission_id,description,last_updated_stamp,created_stamp) VALUES
+('MENU_SUPPLIER_CREATE','MENU','MENU_SUPPLIER','SUPPLIER_CREATE','Menu supplier create','2020-08-30 11:06:18.263','2020-08-30 11:06:18.263')
+,('MENU_SUPPLIER_LIST','MENU','MENU_SUPPLIER','SUPPLIER_VIEW','Menu supplier list','2020-08-30 11:06:20.752','2020-08-30 11:06:20.752')
+;
 
 
 
@@ -364,9 +234,6 @@ insert into role_type(role_type_id, description)
 values ('HEAD_DEPARTMENT', 'Trưởng phòng');
 insert into role_type(role_type_id, description)
 values ('EMPLOYEE_DEPARTMENT', 'Nhân viên của phòng');
-
-insert into content_type (content_type_id, parent_type_id, description, last_updated_stamp, created_stamp)
-values ('DOCUMENT', null, 'Document', '2017-01-03 10:11:28.217', '2017-01-03 10:11:28.217');
 
 
 

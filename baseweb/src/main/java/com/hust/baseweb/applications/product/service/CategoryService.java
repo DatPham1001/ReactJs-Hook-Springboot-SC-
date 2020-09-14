@@ -12,8 +12,12 @@ import java.util.UUID;
 @Service
 public interface CategoryService {
     Category createCategory(CategoryIM categoryDTO);
+
     Optional<CategoryIM> getCategoryById(UUID id);
-    Category updateCategory( UUID id ,CategoryIM categoryIM);
-    String deleteCategory(UUID id);
-    Page<GetCategoriesByNameOM> getAllCategoriesByName(String name, Integer page,Integer limit);
+
+    Category updateCategory(UUID id, CategoryIM categoryIM);
+
+    String deleteCategory(UUID id, Boolean clearAllProduct);
+
+    Page<GetCategoriesByNameOM> getAllCategoriesByName(String name, Integer page, Integer limit);
 }

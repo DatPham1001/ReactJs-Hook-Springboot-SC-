@@ -21,7 +21,7 @@ const Loading = () => {
         <Grid item lg={6} xs={12}>
           <div className={classes.content}>
             <CircularProgress size={100} />
-            <Typography variant="h5">Loading ....</Typography>
+            <Typography variant="h5">Đang tải ...</Typography>
           </div>
         </Grid>
       </Grid>

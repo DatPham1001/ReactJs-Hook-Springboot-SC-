@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -31,13 +28,4 @@ public class OrderItem {
     private Integer importQuantity = 0;
 
     private Long price;
-
-    /*@Transient
-    private String uom;*/
-
-    @LastModifiedDate
-    private Date lastUpdatedStamp;
-
-    @CreatedDate
-    private Date createdStamp;
 }

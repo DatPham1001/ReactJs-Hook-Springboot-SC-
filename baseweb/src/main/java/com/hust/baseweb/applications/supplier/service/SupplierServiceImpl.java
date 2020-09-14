@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class SupplierServiceImpl implements SupplierService {
         ResponseFirstType response;
 
         //kiểm tra xem mã code của NCC đã tồn tại trong hệ thống hay chưa
-        Supplier supplier1 = supplierRepo.findBySupplierCodeAndDeletedFalse(supplierIM.getSupplierCode());
+        Supplier supplier1 = supplierRepo.findByCodeAndDeletedFalse(supplierIM.getSupplierCode());
         if (supplier1 != null) {
             response = new ResponseFirstType(400);
             response.addError("supplierCode", "existed", "Mã nhà cung cấp đã tồn tại");
@@ -47,93 +48,138 @@ public class SupplierServiceImpl implements SupplierService {
 
         Supplier supplier = new Supplier();
 
-        List<UUID> categoryIds = new ArrayList<>();
+//        List<UUID> categoryIds = new ArrayList<>();
 
-        for (String id : supplierIM.getCategoryIds()) {
-            categoryIds.add(UUID.fromString(id));
-        }
+//        for (String id : supplierIM.getCategoryIds()) {
+//            categoryIds.add(UUID.fromString(id));
+//        }
 
-        for (UUID id : categoryIds) {
-            Category category1 = categoryRepo.findByCategoryIdAndDeletedFalse(id);
-            if (category1 == null) {
-                response = new ResponseFirstType(404);
-                response.addError("categories",
-                        "not exist",
-                        "Không tìm thấy danh mục '" + category1.getCategoryName() + "'");
-                return ResponseEntity.status(response.getStatus()).body(response);
-            }
-        }
+//        for (UUID id : categoryIds) {
+//            Category category1 = categoryRepo.findByIdAndDeletedFalse(id);
+//            if (category1 == null) {
+//                response = new ResponseFirstType(404);
+//                response.addError("categories",
+//                        "not exist",
+//                        "Không tìm thấy danh mục '" + category1.getName() + "'");
+//                return ResponseEntity.status(response.getStatus()).body(response);
+//            }
+//        }
 
-        List<Category> categories = categoryRepo.findAllById(categoryIds);
+//        List<Category> categories = categoryRepo.findAllById(categoryIds);
 
-        for (Category category1 : categories) {
-            category1.getSuppliers().add(supplier);
-        }
+//        for (Category category1 : categories) {
+//            category1.getSuppliers().add(supplier);
+//        }
 
-        supplier.setCategories(categories);
-        supplier.setSupplierCode(supplierIM.getSupplierCode());
-        supplier.setSupplierName(supplierIM.getSupplierName());
+//        supplier.setCategories(categories);
+        supplier.setCode(supplierIM.getSupplierCode());
+        supplier.setName(supplierIM.getSupplierName());
         supplier.setPhoneNumber(supplierIM.getPhoneNumber());
         supplier.setEmail(supplierIM.getEmail());
         supplier.setAddress(supplierIM.getAddress());
 
         supplierRepo.save(supplier);
-        categoryRepo.saveAll(categories);
+//        categoryRepo.saveAll(categories);
 
-        return ResponseEntity.status(201).body("Đã tạo");
+        return ResponseEntity.status(201).body(supplier);
     }
 
     @Override
-    public Supplier getSupplier(UUID id) {
-        Supplier supplier = supplierRepo.findBySupplierIdAndDeletedFalse(id);
+    public ResponseEntity<?> getSupplier(UUID id) {
+        Supplier supplier = supplierRepo.findByIdAndDeletedFalse(id);
+        ResponseFirstType response;
+        if(supplier == null){
+            response = new ResponseFirstType(404);
+            response.addError("supplierId", "not exits", "Id không tồn tại");
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
         List<Category> categories = supplier.getCategories();
         for (Category category : categories) {
             category.setSuppliers(null);
         }
         supplier.setOrders(supplier.getOrders());
         //supplier.setCategories(categories);
-        return supplier;
+        return ResponseEntity.ok().body(supplier);
     }
 
     @Override
-    public void updateSupplier(UpdateSupplierIM supplierIM) {
-        Supplier supplier = supplierRepo.getOne(supplierIM.getSupplierId());
+    public ResponseEntity<?> updateSupplier(UpdateSupplierIM supplierIM) {
+        Supplier supplier = supplierRepo.findByIdAndDeletedFalse(supplierIM.getSupplierId());
+        ResponseFirstType response;
+//        if (supplier1 != null) {
+//            response = new ResponseFirstType(400);
+//            response.addError("supplierCode", "existed", "Mã nhà cung cấp đã tồn tại");
+//            return ResponseEntity.status(response.getStatus()).body(response);
+//        }
+        if(supplier == null) {
+            response = new ResponseFirstType(404);
+            response.addError("supplierId", "not exist", "id không tồn tại");
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+
 //        if(supplier == null){
 //            return "not found";
 //        }
-        supplierRepo.deleteSupplierCategory(supplierIM.getSupplierId());
+//        supplierRepo.deleteSupplierCategory(supplierIM.getSupplierId());
 
-        List<UUID> categoryIds = new ArrayList<>();
+//        List<UUID> categoryIds = new ArrayList<>();
+//
+//        for (String id : supplierIM.getCategoryIds()) {
+//            categoryIds.add(UUID.fromString(id));
+//        }
+//
+//        List<Category> categories = categoryRepo.findAllById(categoryIds);
+//
+//        for (Category category1 : categories) {
+//            category1.getSuppliers().add(supplier);
+//        }
 
-        for (String id : supplierIM.getCategoryIds()) {
-            categoryIds.add(UUID.fromString(id));
+//        supplier.setCategories(categories);
+
+        Supplier supplier1 = supplierRepo.findByCodeAndDeletedFalse(supplierIM.getSupplierCode());
+        if(supplier1 != null ){
+            if(!supplier1.getCode().equals(supplier.getCode())) {
+                response = new ResponseFirstType(400);
+                response.addError("supplierCode", "existed", "Mã nhà cung cấp đã tồn tại");
+                return ResponseEntity.status(response.getStatus()).body(response);
+            }
+
         }
 
-        List<Category> categories = categoryRepo.findAllById(categoryIds);
-
-        for (Category category1 : categories) {
-            category1.getSuppliers().add(supplier);
-        }
-
-        supplier.setCategories(categories);
-        supplier.setSupplierName(supplierIM.getSupplierName());
+        supplier.setCode(supplierIM.getSupplierCode());
+        supplier.setName(supplierIM.getSupplierName());
         supplier.setPhoneNumber(supplierIM.getPhoneNumber());
         supplier.setEmail(supplierIM.getEmail());
         supplier.setAddress(supplierIM.getAddress());
 
         supplierRepo.save(supplier);
-        categoryRepo.saveAll(categories);
+        return ResponseEntity.ok().body("updated");
+//        categoryRepo.saveAll(categories);
 //        return "updated";
     }
 
     @Override
     public Page<ListSupplierOM> getListSupplier(Integer page, Integer limit, String search) {
-        Pageable pageable = PageRequest.of(page - 1, limit);
+        Pageable pageable = PageRequest.of(page - 1, limit,Sort.by(Sort.Direction.DESC, "last_updated_stamp"));
         return supplierRepo.getListSupplier(search, pageable);
     }
 
     @Override
-    public int deleteSupplier(UUID id) {
-        return supplierRepo.deleteSupplier(id);
+    public ResponseEntity<?> deleteSupplier(UUID id) {
+        ResponseFirstType response;
+        Supplier supplier = supplierRepo.findByIdAndDeletedFalse(id);
+
+        if (supplier == null) {
+            response = new ResponseFirstType(400);
+            response.addError("id", "not exist", "Nhà cung cấp không tồn tại");
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        supplier.setDeleted(true);
+        supplierRepo.save(supplier);
+
+        return ResponseEntity.ok().body("Đã xoá");
     }
 }

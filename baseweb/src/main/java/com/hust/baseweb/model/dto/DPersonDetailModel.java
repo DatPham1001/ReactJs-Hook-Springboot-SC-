@@ -29,8 +29,8 @@ public class DPersonDetailModel extends RepresentationModel<DPersonDetailModel> 
     private List<String> roles;
 
     public DPersonDetailModel(
-        String fullName, String status, String partyType, Date createdDate, String userLoginId,
-        String partyCode
+            String fullName, String status, String partyType, Date createdDate, String userLoginId,
+            String partyCode
     ) {
         super();
         this.fullName = fullName;
@@ -44,8 +44,8 @@ public class DPersonDetailModel extends RepresentationModel<DPersonDetailModel> 
     public DPersonDetailModel(DPerson p) {
         this.partyId = p.getPartyId();
         this.fullName = p.getPerson() != null
-            ? p.getPerson().getFirstName() + " " + p.getPerson().getMiddleName() + " " + p.getPerson().getLastName()
-            : null;
+                ? p.getPerson().getFirstName() + " " + p.getPerson().getMiddleName() + " " + p.getPerson().getLastName()
+                : null;
         this.middleName = p.getPerson().getMiddleName();
         this.firstName = p.getPerson().getFirstName();
         this.lastName = p.getPerson().getLastName();

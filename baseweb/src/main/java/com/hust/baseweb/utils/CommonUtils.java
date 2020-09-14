@@ -77,8 +77,8 @@ public class CommonUtils {
     }
 
     public static SortAndFiltersInput rebuildQueryDsl(
-        @SuppressWarnings("rawtypes") Pair<Map<String, String>, Map<String, Pair>> pair,
-        SortAndFiltersInput query
+            @SuppressWarnings("rawtypes") Pair<Map<String, String>, Map<String, Pair>> pair,
+            SortAndFiltersInput query
     ) {
         SortCriteria[] sort = query.getSort();
         SearchCriteria[] filter = query.getFilters();

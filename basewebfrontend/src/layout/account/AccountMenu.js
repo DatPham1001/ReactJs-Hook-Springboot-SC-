@@ -24,8 +24,8 @@ export function AccountMenu(props) {
       onClose={props.handleClose}
       style={{ marginTop: "40px" }}
     >
-      <MenuItem onClick={handleViewAccount}>Tài khoản của tôi</MenuItem>
-      <MenuItem onClick={props.handleClose}>Cài đặt</MenuItem>
+      {/* <MenuItem onClick={handleViewAccount}>Tài khoản của tôi</MenuItem>
+      <MenuItem onClick={props.handleClose}>Cài đặt</MenuItem> */}
       <MenuItem onClick={handlePasswordChange}>Đổi mật khẩu</MenuItem>
       <Divider />
       <MenuItem onClick={props.handleLogout}>Đăng xuất</MenuItem>

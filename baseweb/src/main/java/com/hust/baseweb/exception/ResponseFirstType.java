@@ -13,7 +13,7 @@ public class ResponseFirstType {
 
     private final int status;
 
-    private final List<Error> errors = new ArrayList<>();
+    private List<Error> errors = new ArrayList<>();
 
     public ResponseFirstType(int status) {
         this.status = status;
@@ -22,7 +22,7 @@ public class ResponseFirstType {
     @Getter
     @Setter
     @AllArgsConstructor
-    private static class Error {
+    public static class Error {
 
         private final String location;
 

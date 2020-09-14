@@ -29,9 +29,9 @@ public class Orders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID orderId;
+    private UUID id;
 
-    private String orderCode;
+    private String code;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
